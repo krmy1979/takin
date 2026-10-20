@@ -439,8 +439,6 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .geo-note .btn { min-height: 40px; font-size: 14px; padding: 0 14px; }
 .geo-ask { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); }
 .geo-ask p { margin: 0; font-size: 14px; color: var(--ink); }
-.geo-help { font-size: 13px; line-height: 1.6; color: var(--ink); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
-.geo-help b { font-weight: 800; }
 .addr-row { display: flex; gap: 8px; }
 .addr-row .input { flex: 1; min-width: 0; }
 .addr-row .btn { min-height: 0; padding: 0 14px; white-space: nowrap; }
@@ -850,19 +848,6 @@ async function geoPermission() {
   try { if (navigator.permissions) return (await navigator.permissions.query({ name: "geolocation" })).state; } catch (e) {}
   return "unknown";
 }
-// how to turn location back on, for the device in hand
-function geoHelpHTML() {
-  const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/.test(ua)) return `<b>איך מאשרים מיקום באייפון:</b><br>
-    1. ב-Safari לחצו על <b>aA</b> (או על הסמל משמאל לכתובת) ← <b>הגדרות אתר</b> ← <b>מיקום</b> ← <b>אפשר</b>.<br>
-    2. אם זה לא עוזר: <b>הגדרות</b> ← <b>פרטיות ואבטחה</b> ← <b>שירותי מיקום</b> ← ודאו שהם מופעלים, ואז <b>אתרי Safari</b> ← <b>בזמן השימוש ביישום</b>.<br>
-    3. חזרו לכאן ולחצו "אשרו את המיקום שלי".`;
-  if (/Android/.test(ua)) return `<b>איך מאשרים מיקום באנדרואיד:</b><br>
-    1. לחצו על הסמל שליד הכתובת בראש הדפדפן ← <b>הרשאות</b> ← <b>מיקום</b> ← <b>אפשר</b>.<br>
-    2. ודאו שה<b>מיקום</b> בטלפון מופעל (משיכה מלמעלה ← מיקום).<br>
-    3. חזרו לכאן ולחצו "אשרו את המיקום שלי".`;
-  return `<b>איך מאשרים מיקום במחשב:</b> לחצו על סמל המנעול שליד הכתובת בראש הדפדפן ← <b>מיקום</b> ← <b>אפשר</b>, ואז לחצו "אשרו את המיקום שלי".`;
-}
 // ---- our own friendly "use your location?" dialog, shown BEFORE the browser asks.
 // Saying "not now" here never blocks location in the browser, so people can still allow it later with one tap.
 let geoChoice = sessionStorage.getItem("takin_geo") || "";   // "", "yes", "no"
@@ -872,9 +857,8 @@ function askGeoDialog() {
     d.innerHTML = `<div class="box"><div class="big">${ico("locate")}</div>
       <h3 id="geoQ">להשתמש במיקום שלך?</h3>
       <p>ככה נסמן את המפגע במפה ונכתוב את הכתובת לבד. המיקום משמש רק לדיווח הזה.</p>
-      <button class="btn btn-primary" type="button" data-a="yes">${ico("locate")}כן, השתמשו במיקום שלי</button>
-      <button class="btn btn-ghost" type="button" data-a="no">לא עכשיו, אסמן במפה בעצמי</button>
-      <p class="fine">${/iPhone|iPad|iPod/.test(navigator.userAgent) ? "אחרי \"כן\" הטלפון ישאל שוב – לחצו <b>אפשר</b> או <b>אפשר פעם אחת</b>." : "אחרי \"כן\" הדפדפן ישאל שוב – לחצו <b>אפשר</b>."}</p></div>`;
+      <button class="btn btn-primary" type="button" data-a="yes">${ico("locate")}אני מאשר</button>
+      <button class="btn btn-ghost" type="button" data-a="no">לא, אסמן בעצמי</button></div>`;
     document.body.appendChild(d);
     const done = a => { d.remove(); geoChoice = a; sessionStorage.setItem("takin_geo", a); res(a === "yes"); };
     d.querySelectorAll("[data-a]").forEach(b => b.addEventListener("click", () => done(b.dataset.a)));
@@ -883,13 +867,13 @@ function askGeoDialog() {
   });
 }
 // decide whether to locate: already allowed → go; blocked → don't bother; otherwise ask with our dialog first
+// force = the person tapped "אני מאשר מיקום" themselves: that tap is the approval, no extra questions
 async function maybeLocate(force) {
+  if (force) { geoChoice = "yes"; sessionStorage.setItem("takin_geo", "yes"); return autoLocate(true); }
   const st = await geoPermission();
-  if (st === "granted") return autoLocate(force);
-  if (st === "denied") { draft.gpsState = "denied"; locUI(); return; }
-  if (!force && geoChoice === "no") { locUI(); return; }
-  if (geoChoice !== "yes" || force) { if (!(await askGeoDialog())) { locUI(); return; } }
-  autoLocate(true);
+  if (st === "granted" || geoChoice === "yes") return autoLocate(true);
+  if (geoChoice === "no") { locUI(); return; }
+  if (await askGeoDialog()) autoLocate(true); else locUI();
 }
 // typed address → point on the map (searched inside the chosen city)
 async function forwardGeocode(q) {
@@ -978,8 +962,7 @@ function locUI() {
   if (draft.gpsState === "busy" && !draft.lat) status = `<span class="spin"></span>מאתרים את המיקום שלכם…`;
   else if (draft.lat && draft.src === "gps") status = `${ico("locate")}המיקום אותר${acc ? ` · דיוק של כ־<b class="num">${acc}</b> מ׳` : ""}`;
   else if (draft.lat) status = `${ico("pin")}המיקום סומן על המפה`;
-  else if (draft.gpsState === "denied") status = `${ico("pin")}המיקום לא אושר. אפשר לגעת במפה במקום המפגע או לכתוב כתובת`;
-  else if (draft.gpsState === "fail") status = `${ico("pin")}לא הצלחנו לאתר מיקום. געו במפה במקום המפגע או כתבו כתובת`;
+  else if (draft.gpsState === "denied" || draft.gpsState === "fail") status = `${ico("pin")}לא קיבלנו מיקום. געו במפה במקום המפגע או כתבו כתובת`;
   else status = `${ico("pin")}געו במפה במקום המפגע, או כתבו כתובת למטה`;
   const weak = draft.src === "gps" && acc > 60;
   let suggest = "";
@@ -995,17 +978,11 @@ function locUI() {
     if (chips.length) suggest += `<div class="sug-label">או בחרו תיאור אחר:</div><div class="chips sug-chips">${chips.map(c => `<button class="chip" type="button" data-addr="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
   } else if (draft.lat) suggest = `<div class="sug-line muted">לא מצאנו שם רחוב לנקודה הזו. כתבו ציון דרך למטה.</div>`;
   const ask = !draft.lat && draft.gpsState !== "busy" && navigator.geolocation
-    ? (draft.gpsState === "denied"
-      ? `<div class="geo-note"><span>המיקום חסום בדפדפן – זה בסדר. <b>געו במפה</b> במקום המפגע, או <b>כתבו כתובת</b> למטה.</span>
-          <div class="row"><button class="btn btn-ghost" type="button" id="geoHow">איך מאפשרים מיקום?</button></div>
-          <div class="geo-help" id="geoHowBox" hidden>${geoHelpHTML()}</div></div>`
-      : `<div class="geo-note"><div class="row"><button class="btn btn-ghost" type="button" id="askGeo">${ico("locate")}השתמשו במיקום שלי</button></div></div>`)
-    : "";
+    ? `<div class="geo-note"><div class="row"><button class="btn btn-ghost" type="button" id="askGeo">${ico("locate")}אני מאשר מיקום</button></div></div>` : "";
   box.innerHTML = `${ask}<div class="loc-status ${draft.lat ? "ok" : ""}">${status}</div>
     ${weak ? `<div class="sug-warn">${ico("locate")}הדיוק נמוך. כדאי לגרור את הסיכה בדיוק למקום המפגע.</div>` : ""}
     ${suggest ? `<div class="sug">${suggest}</div>` : ""}`;
   const ag = $("#askGeo"); ag && ag.addEventListener("click", () => maybeLocate(true));
-  const gh = $("#geoHow"); gh && gh.addEventListener("click", () => { const b = $("#geoHowBox"); b.hidden = !b.hidden; });
   box.querySelectorAll("[data-addr]").forEach(b => b.addEventListener("click", () => {
     draft.addr = b.dataset.addr; draft.addrManual = true; const i = $("#addrIn"); if (i) i.value = draft.addr; updNextLoc();
   }));
@@ -1283,7 +1260,7 @@ function renderStep() {
   if (step === 1) {
     body.innerHTML = `${stepper()}
       <h3 class="q">איפה זה?</h3>
-      <p class="hint">אשרו מיקום ונכתוב את הכתובת לבד. אפשר גם לגעת במפה במקום המפגע (הכתובת תיכתב לפי הסימון) או לכתוב כתובת בעצמכם.</p>
+      <p class="hint">געו במפה במקום המפגע או כתבו כתובת. אם אישרתם מיקום, נכתוב את הכתובת לבד.</p>
       <div class="picker" id="picker" dir="ltr"></div>
       <div class="loc-card" id="locCard"></div>
       <div class="field"><label for="addrIn">הכתובת שתישלח למוקד</label>
@@ -1676,7 +1653,6 @@ let meMarker = null;
 $("#locateBtn").addEventListener("click", async () => {
   const b = $("#locateBtn");
   const st = await geoPermission();
-  if (st === "denied") return showGeoHelp();
   if (st !== "granted" && geoChoice !== "yes" && !(await askGeoDialog())) return;
   b.disabled = true;
   try {
@@ -1687,22 +1663,16 @@ $("#locateBtn").addEventListener("click", async () => {
       else meMarker.setLatLng([p[0], p[1]]);
     }
   } catch (e) {
-    if (e && e.code === 1) showGeoHelp(); else toast("לא הצלחנו לאתר מיקום. נסו שוב בעוד רגע");
+    toast("לא קיבלנו מיקום. אפשר להזיז את המפה ידנית");
   }
   b.disabled = false;
 });
-function showGeoHelp() {
-  let d = $("#geoHelpDlg");
-  if (!d) { d = document.createElement("div"); d.id = "geoHelpDlg"; d.className = "toast-card"; document.body.appendChild(d); }
-  d.innerHTML = `<div class="geo-help">${geoHelpHTML()}</div><button class="btn btn-primary" type="button" id="geoHelpOk">הבנתי</button>`;
-  d.hidden = false; $("#geoHelpOk").onclick = () => d.hidden = true;
-}
 
 initMap();
 render();
 initCloud();
 // ---- refresh / update: clears the offline copy and loads the newest version from the site
-const APP_VER = "11";
+const APP_VER = "12";
 $("#appVer").textContent = APP_VER;
 async function hardRefresh() {
   $("#refreshBtn").classList.add("spin");
