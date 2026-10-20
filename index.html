@@ -132,6 +132,22 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
   font-weight: 700; font-size: 14px; white-space: nowrap;
 }
 .city-btn .ico { width: 16px; height: 16px; color: var(--brass); }
+.top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.acct img { width: 22px; height: 22px; border-radius: 50%; }
+.acct svg { width: 18px; height: 18px; flex: none; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--fixed); box-shadow: 0 0 0 3px var(--fixed-soft); }
+.reply { background: var(--fixed-soft); border-radius: var(--r); padding: 12px 14px; font-size: 15px; }
+.reply b { display: block; font-size: 12.5px; color: var(--fixed); margin-bottom: 2px; }
+.signin-card { text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 8px 0; }
+.signin-card .big { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: var(--brass-soft); color: var(--brass); }
+.signin-card .big .ico { width: 30px; height: 30px; }
+.gbtn { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: 26px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 16px; box-shadow: var(--shadow); }
+.gbtn svg { width: 20px; height: 20px; }
+.done-card { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 0; }
+.done-card .big { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: var(--fixed-soft); color: var(--fixed); }
+.done-card .big .ico { width: 38px; height: 38px; stroke-width: 2.4; }
+.done-card .ref { font-family: var(--f-display); font-size: 20px; font-weight: 700; }
+.subs { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---- Stats ---- */
 .stats {
@@ -203,6 +219,8 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .pill.s-open { color: var(--open); background: var(--open-soft); }
 .pill.s-progress { color: var(--progress); background: var(--progress-soft); }
 .pill.s-fixed { color: var(--fixed); background: var(--fixed-soft); }
+.pill.s-rejected { color: var(--muted); background: var(--surface-2); }
+.pin.s-rejected { background: #7C8A8F; }
 .demo-tag { font-size: 11px; font-weight: 700; color: var(--brass); border: 1px solid currentColor; border-radius: 6px; padding: 0 5px; flex: none; }
 .metoo-count { display: inline-flex; align-items: center; gap: 4px; }
 .metoo-count .ico { width: 15px; height: 15px; }
@@ -355,6 +373,68 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .note { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; }
 .note .ico { width: 18px; height: 18px; color: var(--brass); margin-top: 2px; }
 
+/* Multi-photo */
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.shot { position: relative; aspect-ratio: 1; max-width: 100%; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot .del { position: absolute; top: 6px; left: 6px; width: 30px; height: 30px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgba(9,24,29,.72); color: #fff; }
+.shot .del .ico { width: 16px; height: 16px; stroke-width: 2.4; }
+.shot .n { position: absolute; bottom: 6px; right: 6px; min-width: 22px; height: 22px; border-radius: 11px; display: grid; place-items: center; padding: 0 6px; background: rgba(9,24,29,.72); color: #fff; font-size: 12px; font-weight: 700; }
+.shot.slot { display: grid; place-items: center; border-style: dashed; color: var(--muted); font-size: 12.5px; text-align: center; padding: 6px; background: var(--surface); }
+.shot.slot .ico { width: 22px; height: 22px; color: var(--brass); margin: 0 auto 4px; display: block; }
+.photo-btns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+.photo-btns .btn { min-height: 56px; }
+.photo-btns label.btn { position: relative; cursor: pointer; }
+.photo-btns input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.shot-count { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--muted); }
+.shot-count b { color: var(--ink); }
+.meter { display: flex; gap: 4px; }
+.meter i { width: 18px; height: 5px; border-radius: 3px; background: var(--line); }
+.meter i.on { background: var(--brass); }
+
+/* In-app camera */
+.cam { position: fixed; inset: 0; z-index: 400; background: #000; color: #fff; display: flex; flex-direction: column; direction: rtl; }
+.cam video { flex: 1; min-height: 0; width: 100%; object-fit: cover; background: #000; }
+.cam-top { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) 12px max(14px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(rgba(0,0,0,.55), transparent); }
+.cam-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgba(255,255,255,.16); color: #fff; backdrop-filter: blur(6px); }
+.cam-pill { padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.45); font-weight: 700; font-size: 14px; }
+.cam-bottom { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: #000; }
+.cam-strip { display: flex; gap: 6px; overflow-x: auto; min-width: 0; }
+.cam-strip img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 2px solid rgba(255,255,255,.8); flex: none; }
+.shutter { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; background: transparent; padding: 0; display: grid; place-items: center; }
+.shutter::after { content: ""; width: 60px; height: 60px; border-radius: 50%; background: #fff; transition: transform .1s; }
+.shutter:active::after { transform: scale(.88); }
+.shutter[disabled] { opacity: .35; }
+.cam-done { justify-self: start; min-height: 46px; padding: 0 18px; border-radius: 23px; border: 0; background: var(--brass); color: #fff; font-weight: 800; font-size: 15px; }
+.cam-done[disabled] { opacity: .4; }
+.cam-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.cam-flash.on { opacity: .75; transition: none; }
+.cam-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 32px; font-size: 16px; }
+.gallery { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; border-radius: var(--r); }
+.gallery img { flex: 0 0 88%; max-width: 88%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--r); scroll-snap-align: center; }
+.gallery img:only-child { flex-basis: 100%; max-width: 100%; }
+
+/* Location suggestion */
+.loc-card { display: flex; flex-direction: column; gap: 10px; }
+.loc-status .ico { width: 18px; height: 18px; }
+.loc-status b { font-weight: 800; }
+.sug { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.sug-main { font-family: var(--f-display); font-size: 22px; font-weight: 700; line-height: 1.2; }
+.sug-area { color: var(--muted); font-size: 14.5px; }
+.sug-label { font-size: 12.5px; color: var(--muted); margin-top: 6px; font-weight: 600; }
+.sug-chips { flex-wrap: wrap; overflow: visible; }
+.sug-chips .chip { font-size: 13.5px; }
+.sug-line { display: flex; align-items: center; gap: 8px; font-size: 14.5px; }
+.sug-line.muted { color: var(--muted); }
+.sug-warn { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--progress); background: var(--progress-soft); padding: 8px 12px; border-radius: 10px; }
+.sug-warn .ico { width: 18px; height: 18px; }
+.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--brass); animation: spin .8s linear infinite; flex: none; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } }
+
 /* Detail */
 .hero-img { width: 100%; aspect-ratio: 16 / 10; border-radius: var(--r); overflow: hidden; background: var(--brass-soft); display: grid; place-items: center; color: var(--brass); }
 .hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -406,10 +486,13 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
         <div class="tag">רואים מפגע? מצלמים. העירייה מקבלת.</div>
       </div>
     </div>
+    <div class="top-actions">
+    <button class="city-btn acct" id="acctBtn" type="button" hidden></button>
     <button class="city-btn" id="cityBtn" type="button" aria-label="בחירת עיר והגדרות">
       <svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
       <span id="cityName">אשקלון</span>
     </button>
+    </div>
   </header>
 
   <div class="banner" id="setupBanner" hidden>
@@ -440,7 +523,7 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
       <button class="chip" type="button" data-f="fixed" aria-pressed="false">טופלו</button>
     </div>
     <div class="list" id="list"></div>
-    <p class="foot-note">דיווחים שמסומנים "דוגמה" נועדו להמחשה בלבד.</p>
+    <p class="foot-note" id="demoNote">דיווחים שמסומנים "דוגמה" נועדו להמחשה בלבד. התחברו כדי לראות את הדיווחים האמיתיים בעיר.</p>
   </section>
 
   <!-- MINE VIEW -->
@@ -521,6 +604,22 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
   <div class="sheet-foot"><button class="btn btn-primary" type="button" id="saveSettings">שמירה</button></div>
 </section>
 
+<div class="cam" id="cam" role="dialog" aria-modal="true" aria-label="מצלמה" hidden>
+  <video id="camVideo" playsinline muted autoplay></video>
+  <div class="cam-flash" id="camFlash"></div>
+  <div class="cam-msg" id="camMsg" hidden></div>
+  <div class="cam-top">
+    <button class="cam-btn" type="button" id="camClose" aria-label="סגירת המצלמה"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <span class="cam-pill num" id="camCount">0 מתוך 5</span>
+    <button class="cam-btn" type="button" id="camFlip" aria-label="החלפת מצלמה"><svg class="ico" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/></svg></button>
+  </div>
+  <div class="cam-bottom">
+    <div class="cam-strip" id="camStrip"></div>
+    <button class="shutter" type="button" id="camShutter" aria-label="צילום"></button>
+    <button class="cam-done" type="button" id="camDone">סיום</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -552,6 +651,8 @@ const ICONS = {
   car: '<path d="M5 16h14"/><path d="M5 16v-4l2.2-5h9.6L19 12v4"/><circle cx="8" cy="16.5" r="1.7"/><circle cx="16" cy="16.5" r="1.7"/><path d="M5 12h14"/>',
   noise: '<path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a7.5 7.5 0 0 1 0 11"/>',
   other: '<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  paw: '<circle cx="7" cy="9" r="1.8"/><circle cx="11" cy="5.8" r="1.8"/><circle cx="15.5" cy="6.6" r="1.8"/><circle cx="18" cy="11" r="1.8"/><path d="M8.5 17.5c0-2.6 1.8-4.8 4-4.8s4 2.2 4 4.8c0 1.6-1.3 2.5-2.7 2.1l-1.3-.4-1.3.4c-1.4.4-2.7-.5-2.7-2.1z"/>',
   camera: '<path d="M4 8h3l1.6-2.5h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.6"/>',
   pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
   locate: '<circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/>',
@@ -570,7 +671,7 @@ const ICONS = {
 };
 const ico = (n, cls = "ico") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.other}</svg>`;
 
-const CATS = [
+let CATS = [
   { id: "road",   name: "בור או נזק בכביש", dept: "אגף דרכים ותנועה",   hint: "בורות, שקיעות, אספלט" },
   { id: "light",  name: "תאורת רחוב",       dept: "מחלקת חשמל ותאורה",  hint: "פנס כבוי או מהבהב" },
   { id: "trash",  name: "פסולת וניקיון",    dept: "אגף תברואה",          hint: "פח מלא, גזם, פסולת" },
@@ -582,8 +683,16 @@ const CATS = [
   { id: "noise",  name: "רעש ומטרדים",      dept: "איכות הסביבה ופיקוח",  hint: "רעש, ריח, עבודות" },
   { id: "other",  name: "אחר",              dept: "מוקד עירוני 106",      hint: "כל דבר אחר" }
 ];
-const catById = id => CATS.find(c => c.id === id) || CATS[CATS.length - 1];
-const STATUS = { open: "פתוח", progress: "בטיפול", fixed: "טופל" };
+CATS.forEach(c => { c.icon = c.id; c.subs = []; });
+const BASE_CATS = CATS.slice();
+const catById = id => CATS.find(c => c.id === id || c.name === id) || BASE_CATS.find(c => c.id === id) || { id: id || "other", name: id || "אחר", dept: "מוקד", hint: "", icon: iconFor(id || ""), subs: [] };
+function iconFor(name) {
+  const t = [["תאור", "light"], ["חשמל", "light"], ["כביש", "road"], ["מדרכ", "walk"], ["ניקיון", "trash"], ["תברו", "trash"], ["פסולת", "trash"], ["מים", "water"], ["ביוב", "water"],
+    ["גינון", "tree"], ["עצים", "tree"], ["תעבורה", "hazard"], ["חניה", "car"], ["רכב", "car"], ["פיקוח", "noise"], ["רעש", "noise"], ["וטרינר", "paw"], ["בעלי חיים", "paw"], ["בטיחות", "hazard"]];
+  for (const [k, ic] of t) if (name.includes(k)) return ic;
+  return "other";
+}
+const STATUS = { open: "התקבל", progress: "בטיפול", fixed: "טופל", rejected: "לא לטיפול" };
 
 /* ================= Storage (local now; Firebase later) ================= */
 const KEY = "takin.v2";
@@ -594,14 +703,16 @@ function load() {
   try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
   return Object.assign({ city: "אשקלון", wa: "054-9908011", mail: "", name: "", phone: "", configured: true, seq: 1040, reports: [], metoo: [] }, s || {});
 }
+const photosOf = r => r.photos && r.photos.length ? r.photos : (r.photo ? [r.photo] : []);
+state.reports.forEach(r => { if (!r.photos) { r.photos = r.photo ? [r.photo] : []; delete r.photo; } });
 function save() {
   const attempt = () => localStorage.setItem(KEY, JSON.stringify(state));
   try { attempt(); }
   catch (e) {
     // Storage full: drop photos from the oldest reports and try again.
     try {
-      const mine = state.reports.filter(r => r.photo).sort((a, b) => a.created - b.created);
-      for (const r of mine.slice(0, Math.ceil(mine.length / 2))) r.photo = null;
+      const mine = state.reports.filter(r => r.photos && r.photos.length).sort((a, b) => a.created - b.created);
+      for (const r of mine.slice(0, Math.ceil(mine.length / 2))) { r.photos = r.photos.slice(0, 1); }
       attempt();
     } catch (e2) {}
   }
@@ -623,10 +734,17 @@ function demoReports(city) {
   return d.map((x, i) => ({
     id: "דוגמה-" + (i + 1), demo: true, cat: x[0], lat: c[1] + x[1], lng: c[2] + x[2], addr: x[3], desc: x[4],
     created: now - x[5] * DAY, status: x[6], metoo: x[7] + (state.metoo.includes("דוגמה-" + (i + 1)) ? 1 : 0), sentAt: now - x[5] * DAY + 600000,
-    fixedAt: x[6] === "fixed" ? now - 2 * DAY : null, mine: false, photo: null
+    fixedAt: x[6] === "fixed" ? now - 2 * DAY : null, mine: false, photos: []
   }));
 }
-const allReports = () => [...state.reports.filter(r => r.city === state.city), ...demoReports(state.city)];
+const allReports = () => {
+  if (cloud.user && cloud.loaded) {
+    const ids = new Set(cloud.mine.map(r => r.id));
+    return [...cloud.mine, ...cloud.pub.filter(r => !ids.has(r.id)), ...state.reports.filter(r => r.city === state.city)];
+  }
+  return [...state.reports.filter(r => r.city === state.city), ...demoReports(state.city)];
+};
+const myReports = () => [...(cloud.user ? cloud.mine : []), ...state.reports.filter(r => r.mine)].sort((a, b) => b.created - a.created);
 const cityCenter = () => { const c = CITIES.find(x => x[0] === state.city) || CITIES[0]; return [c[1], c[2]]; };
 
 /* ================= Helpers ================= */
@@ -691,18 +809,111 @@ function normPhone(p) {
 function getPosition() {
   return new Promise((res, rej) => {
     if (!navigator.geolocation) return rej(new Error("no-geo"));
-    navigator.geolocation.getCurrentPosition(p => res([p.coords.latitude, p.coords.longitude]), rej, { enableHighAccuracy: true, timeout: 9000, maximumAge: 60000 });
+    navigator.geolocation.getCurrentPosition(p => res([p.coords.latitude, p.coords.longitude, Math.round(p.coords.accuracy || 0)]), rej, { enableHighAccuracy: true, timeout: 12000, maximumAge: 15000 });
   });
 }
+const metersBetween = (a, b, c, d) => { const k = Math.PI / 180, x = (d - b) * k * Math.cos((a + c) / 2 * k), y = (c - a) * k; return Math.sqrt(x * x + y * y) * 6371000; };
 async function reverseGeocode(lat, lng) {
   try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=he&zoom=18&lat=${lat}&lon=${lng}`);
-    if (!r.ok) return "";
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=he&zoom=18&addressdetails=1&lat=${lat}&lon=${lng}`);
+    if (!r.ok) return null;
     const j = await r.json(); const a = j.address || {};
-    const street = a.road || a.pedestrian || a.footway || a.neighbourhood || "";
-    return [street && (street + (a.house_number ? " " + a.house_number : "")), a.suburb && a.suburb !== street ? a.suburb : ""].filter(Boolean).join(", ");
-  } catch (e) { return ""; }
+    const street = a.road || a.pedestrian || a.footway || a.path || a.square || "";
+    const area = a.neighbourhood || a.suburb || a.quarter || "";
+    const place = j.name && j.name !== street ? j.name : "";
+    const line = street ? street + (a.house_number ? " " + a.house_number : "") : (place || area);
+    return { street, number: a.house_number || "", area: area !== street ? area : "", place, line };
+  } catch (e) { return null; }
 }
+async function nearbyStreets(lat, lng) {
+  try {
+    const q = `[out:json][timeout:8];way(around:70,${lat},${lng})[highway][name];out tags center 20;`;
+    const r = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded" } });
+    if (!r.ok) return [];
+    const j = await r.json(); const best = {};
+    for (const el of j.elements || []) {
+      const t = el.tags || {}; const name = t["name:he"] || t.name; if (!name || !el.center) continue;
+      const d = metersBetween(lat, lng, el.center.lat, el.center.lon);
+      if (!(name in best) || d < best[name]) best[name] = d;
+    }
+    return Object.entries(best).sort((a, b) => a[1] - b[1]).map(e => e[0]).slice(0, 3);
+  } catch (e) { return []; }
+}
+
+/* Location engine: runs in the background from the moment a report starts */
+let geoToken = 0;
+async function lookupPlace(lat, lng) {
+  const my = ++geoToken;
+  draft.geo = null; draft.near = []; draft.looking = true; locUI();
+  const [g, near] = await Promise.all([reverseGeocode(lat, lng), nearbyStreets(lat, lng)]);
+  if (my !== geoToken || !draft) return;
+  draft.looking = false; draft.geo = g;
+  draft.near = near.filter(n => !g || n !== g.street);
+  if (g && g.line && !draft.addrManual) {
+    draft.addr = g.line + (g.area ? ", " + g.area : "");
+  } else if (!g && near.length && !draft.addrManual) {
+    draft.addr = near.length > 1 ? `פינת ${near[0]} ו${near[1]}` : near[0];
+  }
+  locUI();
+}
+function setDraftLoc(lat, lng, acc, src) {
+  draft.lat = lat; draft.lng = lng; draft.acc = acc || null; draft.src = src;
+  if (picker && hasL()) {
+    if (!pickerPin) {
+      pickerPin = L.marker([lat, lng], { draggable: true, icon: L.divIcon({ className: "", iconSize: [40, 40], iconAnchor: [20, 40], html: '<div class="pin-new"></div>' }) }).addTo(picker);
+      pickerPin.on("dragend", () => { const q = pickerPin.getLatLng(); setDraftLoc(q.lat, q.lng, null, "map"); });
+    } else pickerPin.setLatLng([lat, lng]);
+    if (src === "gps") picker.setView([lat, lng], 18);
+  }
+  lookupPlace(lat, lng);
+}
+async function autoLocate(force) {
+  if (!draft || (draft.lat && !force)) return;
+  draft.gpsState = "busy"; locUI();
+  try {
+    const [lat, lng, acc] = await getPosition();
+    if (!draft) return;
+    draft.gpsState = "ok";
+    if (!draft.lat || force || draft.src === "gps") setDraftLoc(lat, lng, acc, "gps");
+  } catch (e) {
+    if (!draft) return;
+    draft.gpsState = e && e.code === 1 ? "denied" : "fail"; locUI();
+  }
+}
+function locUI() {
+  if (!draft || step !== 1) return;
+  const box = $("#locCard"); if (!box) return;
+  const g = draft.geo, acc = draft.acc;
+  let status;
+  if (draft.gpsState === "busy" && !draft.lat) status = `<span class="spin"></span>מאתרים את המיקום שלכם…`;
+  else if (draft.lat && draft.src === "gps") status = `${ico("locate")}המיקום אותר${acc ? ` · דיוק של כ־<b class="num">${acc}</b> מ׳` : ""}`;
+  else if (draft.lat) status = `${ico("pin")}המיקום סומן על המפה`;
+  else if (draft.gpsState === "denied") status = `${ico("pin")}אין הרשאת מיקום. געו במפה במקום המפגע`;
+  else if (draft.gpsState === "fail") status = `${ico("pin")}לא הצלחנו לאתר מיקום. געו במפה במקום המפגע`;
+  else status = `${ico("pin")}געו במפה במקום המפגע`;
+  const weak = draft.src === "gps" && acc > 60;
+  let suggest = "";
+  if (draft.lat && draft.looking) suggest = `<div class="sug-line muted"><span class="spin"></span>מזהים את שם הרחוב…</div>`;
+  else if (draft.lat && (g || draft.near.length)) {
+    const main = g && g.line ? g.line : (draft.near[0] || "");
+    suggest = `<div class="sug-main">${esc(main)}</div>${g && g.area ? `<div class="sug-area">${esc(g.area)}</div>` : ""}`;
+    const chips = [];
+    if (g && g.street && draft.near.length) chips.push(`פינת ${g.street} ו${draft.near[0]}`);
+    if (!g && draft.near.length > 1) chips.push(`פינת ${draft.near[0]} ו${draft.near[1]}`);
+    draft.near.forEach(n => chips.push(`ליד ${n}`));
+    if (g && g.place && g.place !== main) chips.push(`ליד ${g.place}`);
+    if (chips.length) suggest += `<div class="sug-label">או בחרו תיאור אחר:</div><div class="chips sug-chips">${chips.map(c => `<button class="chip" type="button" data-addr="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
+  } else if (draft.lat) suggest = `<div class="sug-line muted">לא מצאנו שם רחוב לנקודה הזו. כתבו ציון דרך למטה.</div>`;
+  box.innerHTML = `<div class="loc-status ${draft.lat ? "ok" : ""}">${status}</div>
+    ${weak ? `<div class="sug-warn">${ico("locate")}הדיוק נמוך. כדאי לגרור את הסיכה בדיוק למקום המפגע.</div>` : ""}
+    ${suggest ? `<div class="sug">${suggest}</div>` : ""}`;
+  box.querySelectorAll("[data-addr]").forEach(b => b.addEventListener("click", () => {
+    draft.addr = b.dataset.addr; draft.addrManual = true; const i = $("#addrIn"); if (i) i.value = draft.addr; updNextLoc();
+  }));
+  const i = $("#addrIn"); if (i && !draft.addrManual && i.value !== draft.addr) i.value = draft.addr;
+  updNextLoc();
+}
+function updNextLoc() { const n = $("#nextBtn"), i = $("#addrIn"); if (n && i && step === 1) n.disabled = !(draft.lat || i.value.trim().length > 2); }
 
 /* ================= Message to 106 ================= */
 function buildMessage(r, reminder = false) {
@@ -714,9 +925,12 @@ function buildMessage(r, reminder = false) {
   lines.push(`סוג המפגע: ${c.name}`);
   lines.push(`המחלקה הרלוונטית: ${c.dept}`);
   lines.push(`מיקום: ${r.addr || "לפי הקישור"}`);
+  if (r.near && r.near.length && !(r.addr || "").includes(r.near[0])) lines.push(`רחובות סמוכים: ${r.near.join(", ")}`);
+  if (r.acc) lines.push(`דיוק המיקום: כ־${r.acc} מ׳ (GPS)`);
   if (r.lat) lines.push(`קישור למפה: https://maps.google.com/?q=${r.lat.toFixed(6)},${r.lng.toFixed(6)}`);
   if (r.desc) lines.push(`תיאור: ${r.desc}`);
   if (r.metoo > 1) lines.push(`תושבים נוספים שדיווחו: ${r.metoo - 1}`);
+  if (photosOf(r).length) lines.push(`מצורפות ${photosOf(r).length === 1 ? "תמונה אחת" : photosOf(r).length + " תמונות"}`);
   lines.push(`מספר דיווח: ${r.id}`);
   const who = [state.name, state.phone].filter(Boolean).join(", ");
   if (who) lines.push(`פרטי המדווח: ${who}`);
@@ -730,7 +944,7 @@ let map, markersLayer, baseLayer, selectedId = null, filter = "all";
 const markerIndex = {};
 function pinIcon(r, sel) {
   return L.divIcon({ className: "", iconSize: [34, 34], iconAnchor: [17, 17],
-    html: `<div class="pin s-${r.status}${sel ? " sel" : ""}">${ico(r.cat)}</div>` });
+    html: `<div class="pin s-${r.status}${sel ? " sel" : ""}">${ico(catById(r.cat).icon)}</div>` });
 }
 function initMap() {
   if (!hasL()) { $("#mapFallback").hidden = false; $("#locateBtn").hidden = true; return; }
@@ -749,7 +963,7 @@ function refreshTiles() {
   if (picker && pickerBase) { picker.removeLayer(pickerBase); pickerBase = tileLayer().addTo(picker); }
 }
 function renderStats(rs) {
-  const open = rs.filter(r => r.status !== "fixed");
+  const open = rs.filter(r => r.status === "open" || r.status === "progress");
   const avg = open.length ? Math.round(open.reduce((s, r) => s + daysOpen(r), 0) / open.length) : 0;
   const month = rs.filter(r => r.status === "fixed" && r.fixedAt && Date.now() - r.fixedAt < 30 * DAY).length;
   $("#stats").innerHTML = `
@@ -760,12 +974,12 @@ function renderStats(rs) {
 function cardHTML(r) {
   const c = catById(r.cat);
   return `<button class="card" type="button" data-id="${esc(r.id)}">
-    <div class="thumb">${r.photo ? `<img src="${r.photo}" alt="">` : ico(r.cat)}</div>
+    <div class="thumb">${photosOf(r).length ? `<img src="${photosOf(r)[0]}" alt="">` : ico(catById(r.cat).icon)}</div>
     <div class="card-body">
       <div class="card-title"><span>${esc(c.name)}</span>${r.demo ? '<span class="demo-tag">דוגמה</span>' : ""}</div>
       <div class="card-addr">${esc(r.addr || "מיקום על המפה")}</div>
       <div class="card-meta"><span class="pill s-${r.status}">${STATUS[r.status]}</span><span class="num">${ageText(r)}</span>
-        <span class="metoo-count num" title="תושבים שדיווחו">${ico("hand")}${r.metoo}</span></div>
+        ${r.cloud ? "" : `<span class="metoo-count num" title="תושבים שדיווחו">${ico("hand")}${r.metoo}</span>`}</div>
     </div>
   </button>`;
 }
@@ -776,6 +990,7 @@ function render() {
   renderStats(rs);
   const shown = rs.filter(r => filter === "all" || r.status === filter);
   $("#listCount").textContent = `${shown.length} דיווחים`;
+  $("#demoNote").hidden = !!(cloud.user && cloud.loaded);
   $("#list").innerHTML = shown.length ? shown.map(cardHTML).join("") :
     `<div class="empty"><h3>אין דיווחים בסינון הזה</h3>נסו סינון אחר או דווחו על מפגע חדש.</div>`;
   if (map) {
@@ -788,8 +1003,9 @@ function render() {
       markerIndex[r.id] = m;
     });
   }
-  const mine = state.reports.filter(r => r.mine).sort((a, b) => b.created - a.created);
-  const openMine = mine.filter(r => r.status !== "fixed").length;
+  const mine = myReports();
+  const openMine = mine.filter(r => r.status === "open" || r.status === "progress").length;
+  renderAccount();
   $("#mineBadge").hidden = !openMine; $("#mineBadge").textContent = openMine;
   $("#mineCount").textContent = mine.length ? `${mine.length} דיווחים` : "";
   $("#mineList").innerHTML = mine.length ? mine.map(cardHTML).join("") :
@@ -830,7 +1046,7 @@ document.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) hideSheet();
   if (e.target.id === "scrim") hideSheet();
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && openSheet) hideSheet(); });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!$("#cam").hidden) { closeCamera(); return; } if (openSheet) hideSheet(); });
 
 /* ================= Detail ================= */
 function openDetail(id) {
@@ -839,30 +1055,34 @@ function openDetail(id) {
   const c = catById(r.cat);
   const voted = state.metoo.includes(r.id);
   $("#detailBody").innerHTML = `
-    <div class="hero-img">${r.photo ? `<img src="${r.photo}" alt="תמונת המפגע">` : ico(r.cat)}</div>
+    ${photosOf(r).length ? `<div class="gallery">${photosOf(r).map((p, i) => `<img src="${p}" alt="תמונת המפגע ${i + 1}">`).join("")}</div>` : `<div class="hero-img">${ico(catById(r.cat).icon)}</div>`}
     <div class="d-title"><h3>${esc(c.name)}</h3><span class="pill s-${r.status}">${STATUS[r.status]}</span>${r.demo ? '<span class="demo-tag">דוגמה</span>' : ""}</div>
+    ${r.sub ? `<p style="margin:0;font-weight:700">${esc(r.sub)}</p>` : ""}
     ${r.desc ? `<p style="margin:0;font-size:16.5px">${esc(r.desc)}</p>` : ""}
+    ${r.note ? `<div class="reply"><b>תגובת המוקד</b>${esc(r.note)}</div>` : ""}
     <dl class="kv">
       <dt>מיקום</dt><dd>${esc(r.addr || "לפי המפה")}</dd>
-      <dt>מחלקה</dt><dd>${esc(c.dept)}</dd>
+      <dt>מחלקה</dt><dd>${esc(r.dept || c.dept)}</dd>
       <dt>מספר דיווח</dt><dd class="num">${esc(r.id)}</dd>
       <dt>זמן</dt><dd class="num">${ageText(r)}</dd>
     </dl>
-    <div class="metoo-big">
+    ${r.cloud ? "" : `<div class="metoo-big">
       <div><b class="num" id="metooNum">${r.metoo}</b><p>תושבים דיווחו על המפגע הזה</p></div>
       ${r.mine ? "" : `<button class="btn btn-ghost btn-metoo" type="button" id="metooBtn" aria-pressed="${voted}">${ico("hand")}${voted ? "הצטרפתי" : "גם אני"}</button>`}
-    </div>
+    </div>`}
     <div>
       <div class="eyebrow" style="margin-bottom:10px">מעקב</div>
-      <ol class="timeline">
+      ${r.cloud ? `<ol class="timeline">${(r.history && r.history.length ? r.history : [{ status: "new", at: r.created }]).map(h => `<li><span class="dot on"></span><div><b>${esc(STATUS[CLOUD_STATUS[h.status] || "open"] || h.status)}</b><span class="num">${fmtDate(new Date(h.at).getTime() || r.created)}${h.note ? " · " + esc(h.note) : ""}</span></div></li>`).join("")}</ol>` : `<ol class="timeline">
         <li><span class="dot on"></span><div><b>הדיווח נפתח</b><span class="num">${fmtDate(r.created)}</span></div></li>
         <li><span class="dot ${r.sentAt ? "on" : ""}"></span><div><b>${r.sentAt ? "נשלח למוקד 106" : "עוד לא נשלח למוקד"}</b><span class="num">${r.sentAt ? fmtDate(r.sentAt) : "אפשר לשלוח בלחיצה למטה"}</span></div></li>
         <li><span class="dot ${r.status !== "open" ? "on" : ""}"></span><div><b>בטיפול העירייה</b><span>${r.status !== "open" ? "העירייה עדכנה שהיא מטפלת" : "ממתין לטיפול"}</span></div></li>
         <li><span class="dot ${r.status === "fixed" ? "on" : ""}"></span><div><b>טופל</b><span class="num">${r.fixedAt ? fmtDate(r.fixedAt) : "עדיין לא"}</span></div></li>
-      </ol>
+      </ol>`}
     </div>`;
   const foot = $("#detailFoot");
-  if (r.mine && r.status !== "fixed") {
+  if (r.cloud) {
+    foot.innerHTML = `<button class="btn btn-ghost" type="button" id="focusBtn">${ico("pin")}הצג במפה</button><button class="btn btn-primary" type="button" data-close>סגירה</button>`;
+  } else if (r.mine && r.status !== "fixed") {
     foot.innerHTML = `<button class="btn btn-ghost" type="button" id="remindBtn">${ico("refresh")}${r.sentAt ? "שליחת תזכורת" : "שליחה למוקד"}</button>
                       <button class="btn btn-primary" type="button" id="fixedBtn">${ico("check")}המפגע טופל</button>`;
   } else if (r.mine) {
@@ -899,8 +1119,9 @@ function openDetail(id) {
 /* ================= Report flow ================= */
 let draft = null, step = 0, picker = null, pickerBase = null, pickerPin = null;
 const STEP_NAMES = ["תמונה", "מיקום", "סוג", "פרטים"];
-function newDraft() { return { photo: null, lat: null, lng: null, addr: "", cat: null, desc: "", locState: "" }; }
-function startFlow() { draft = newDraft(); step = 0; showSheet($("#flow")); renderStep(); }
+const MAX_PHOTOS = 5, GOOD_PHOTOS = 3;
+function newDraft() { return { sub: "", photos: [], lat: null, lng: null, acc: null, src: "", addr: "", addrManual: false, geo: null, near: [], looking: false, gpsState: "", cat: null, desc: "" }; }
+function startFlow() { draft = newDraft(); step = 0; showSheet($("#flow")); renderStep(); autoLocate(); }
 function stepper() {
   return `<div class="steps" aria-label="שלב ${step + 1} מתוך 4">${STEP_NAMES.map((n, i) =>
     `<div class="step ${i < step ? "done" : i === step ? "cur" : ""}"><i></i>${n}</div>`).join("")}</div>`;
@@ -912,70 +1133,72 @@ function renderStep() {
   const back = step > 0 ? `<button class="btn btn-ghost" type="button" id="backBtn">${ico("arrowR")}חזרה</button>` : "";
 
   if (step === 0) {
+    const n = draft.photos.length, full = n >= MAX_PHOTOS;
     body.innerHTML = `${stepper()}
       <h3 class="q">צלמו את המפגע</h3>
-      <p class="hint">תמונה אחת ברורה עוזרת למוקד להבין מיד במה מדובר ולשלוח את הצוות הנכון.</p>
-      <label class="photo-drop" id="drop">
-        ${draft.photo ? `<img src="${draft.photo}" alt="התמונה שצילמתם">` :
-          `<div><div class="big">${ico("camera")}</div><strong>צילום או בחירת תמונה</strong><span>מצלמה או גלריה</span></div>`}
-        <input type="file" id="photoIn" accept="image/*" capture="environment" aria-label="צילום תמונה">
-      </label>
-      <p class="note">${ico("shield")}<span>הקפידו שלא יופיעו בתמונה פנים או לוחיות רישוי. התמונה נדחסת ונשמרת במכשיר שלכם.</span></p>`;
-    foot.innerHTML = `<button class="btn btn-ghost" type="button" id="skipPhoto">בלי תמונה</button>
-      <button class="btn btn-primary" type="button" id="nextBtn" ${draft.photo ? "" : "disabled"}>המשך${ico("arrowL")}</button>`;
-    $("#photoIn").addEventListener("change", async e => {
-      const f = e.target.files && e.target.files[0]; if (!f) return;
-      try { draft.photo = await compressImage(f); renderStep(); } catch (err) { toast("לא הצלחנו לקרוא את התמונה. נסו תמונה אחרת"); }
-    });
-    $("#skipPhoto").addEventListener("click", () => { step = 1; renderStep(); });
+      <p class="hint">מומלץ ${GOOD_PHOTOS} תמונות: אחת מקרוב, אחת מרחוק ואחת שמראה את הסביבה. ככה המוקד מבין מיד במה מדובר ואיפה.</p>
+      <div class="photo-btns">
+        <button class="btn btn-primary" type="button" id="camBtn" ${full ? "disabled" : ""}>${ico("camera")}פתיחת מצלמה</button>
+        <label class="btn btn-ghost" ${full ? 'aria-disabled="true" style="opacity:.45;pointer-events:none"' : ""}>${ico("share")}מהגלריה
+          <input type="file" id="galleryIn" accept="image/*" multiple aria-label="בחירת תמונות מהגלריה"></label>
+      </div>
+      <div class="shot-count"><span><b class="num">${n}</b> מתוך ${MAX_PHOTOS} תמונות${n && n < GOOD_PHOTOS ? ` · עוד ${GOOD_PHOTOS - n} ונגיע למומלץ` : n >= GOOD_PHOTOS ? " · מצוין!" : ""}</span>
+        <span class="meter" aria-hidden="true">${Array.from({ length: MAX_PHOTOS }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span></div>
+      <div class="shots">
+        ${draft.photos.map((p, i) => `<div class="shot"><img src="${p}" alt="תמונה ${i + 1}"><span class="n num">${i + 1}</span>
+          <button class="del" type="button" data-del="${i}" aria-label="מחיקת תמונה ${i + 1}">${ico("close")}</button></div>`).join("")}
+        ${Array.from({ length: Math.max(0, GOOD_PHOTOS - n) }, (_, i) => `<div class="shot slot">${ico("camera")}${["מקרוב", "מרחוק", "הסביבה"][n + i] || ""}</div>`).join("")}
+      </div>
+      <input type="file" id="camFallback" accept="image/*" capture="environment" hidden>
+      <p class="note">${ico("shield")}<span>הקפידו שלא יופיעו בתמונות פנים או לוחיות רישוי. התמונות נדחסות ונשמרות במכשיר שלכם.</span></p>`;
+    foot.innerHTML = `${n ? "" : `<button class="btn btn-ghost" type="button" id="skipPhoto">בלי תמונה</button>`}
+      <button class="btn btn-primary" type="button" id="nextBtn" ${n ? "" : "disabled"}>המשך${ico("arrowL")}</button>`;
+    const addFiles = async files => {
+      const room = MAX_PHOTOS - draft.photos.length;
+      const list = Array.from(files || []).filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|webp)$/i.test(f.name)).slice(0, room);
+      if (files && files.length > room) toast(`אפשר עד ${MAX_PHOTOS} תמונות. נוספו ${list.length}`);
+      for (const f of list) { try { draft.photos.push(await compressImage(f)); } catch (err) { toast("תמונה אחת לא נקראה. נסו אחרת"); } }
+      renderStep();
+    };
+    $("#galleryIn").addEventListener("change", e => addFiles(e.target.files));
+    $("#camFallback").addEventListener("change", e => addFiles(e.target.files));
+    $("#camBtn").addEventListener("click", () => openCamera());
+    body.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { draft.photos.splice(+b.dataset.del, 1); renderStep(); }));
+    const sk = $("#skipPhoto"); sk && sk.addEventListener("click", () => { step = 1; renderStep(); });
   }
 
   if (step === 1) {
     body.innerHTML = `${stepper()}
       <h3 class="q">איפה זה?</h3>
-      <p class="hint">לחצו "המיקום שלי", או געו במפה במקום המדויק. אפשר לגרור את הסיכה.</p>
+      <p class="hint">איתרנו את המיקום שלכם ואת שם הרחוב. אם המפגע במקום אחר, גררו את הסיכה או געו במפה.</p>
       <div class="picker" id="picker" dir="ltr"></div>
-      <div class="btn-row"><button class="btn btn-ghost" type="button" id="gpsBtn">${ico("locate")}המיקום שלי</button></div>
-      <div class="loc-status ${draft.lat ? "ok" : ""}" id="locStatus">${draft.lat ? ico("check") + "המיקום סומן" : (draft.locState || "")}</div>
-      <div class="field"><label for="addrIn">כתובת או ציון דרך</label>
+      <div class="loc-card" id="locCard"></div>
+      <div class="field"><label for="addrIn">הכתובת שתישלח למוקד</label>
         <input class="input" id="addrIn" value="${esc(draft.addr)}" placeholder="לדוגמה: רחוב הרצל 12, ליד הקיוסק">
-        <small>ממלאים אוטומטית כשאפשר. תמיד אפשר לתקן.</small></div>`;
+        <small>אפשר להוסיף ציון דרך, למשל "מול הסופר" או "ליד תחנת האוטובוס".</small></div>
+      <button class="btn btn-ghost" type="button" id="gpsBtn">${ico("locate")}אתרו אותי שוב</button>`;
     foot.innerHTML = `${back}<button class="btn btn-primary" type="button" id="nextBtn">המשך${ico("arrowL")}</button>`;
     const addrIn = $("#addrIn");
-    const updNext = () => { $("#nextBtn").disabled = !(draft.lat || addrIn.value.trim().length > 2); };
-    addrIn.addEventListener("input", () => { draft.addr = addrIn.value; updNext(); });
-    updNext();
-    const setLoc = async (lat, lng, fromGps) => {
-      draft.lat = lat; draft.lng = lng;
-      if (picker) {
-        if (!pickerPin) {
-          pickerPin = L.marker([lat, lng], { draggable: true, icon: L.divIcon({ className: "", iconSize: [40, 40], iconAnchor: [20, 40], html: '<div class="pin-new"></div>' }) }).addTo(picker);
-          pickerPin.on("dragend", () => { const p = pickerPin.getLatLng(); setLoc(p.lat, p.lng, false); });
-        } else pickerPin.setLatLng([lat, lng]);
-        if (fromGps) picker.setView([lat, lng], 18);
-      }
-      $("#locStatus").className = "loc-status ok"; $("#locStatus").innerHTML = ico("check") + "המיקום סומן";
-      updNext();
-      const a = await reverseGeocode(lat, lng);
-      if (a && (!addrIn.value.trim() || addrIn.dataset.auto === "1")) { addrIn.value = a; addrIn.dataset.auto = "1"; draft.addr = a; }
-    };
-    addrIn.addEventListener("input", () => { addrIn.dataset.auto = "0"; });
+    addrIn.addEventListener("input", () => { draft.addr = addrIn.value; draft.addrManual = addrIn.value.trim().length > 0; updNextLoc(); });
     if (hasL()) {
       setTimeout(() => {
+        if (step !== 1 || !$("#picker")) return;
         picker = L.map("picker", { zoomControl: true, attributionControl: true }).setView(draft.lat ? [draft.lat, draft.lng] : cityCenter(), draft.lat ? 18 : 15);
         picker.attributionControl.setPrefix(false);
         pickerBase = tileLayer().addTo(picker);
-        picker.on("click", e => setLoc(e.latlng.lat, e.latlng.lng, false));
-        if (draft.lat) setLoc(draft.lat, draft.lng, false);
+        picker.on("click", e => setDraftLoc(e.latlng.lat, e.latlng.lng, null, "map"));
+        if (draft.lat) {
+          pickerPin = L.marker([draft.lat, draft.lng], { draggable: true, icon: L.divIcon({ className: "", iconSize: [40, 40], iconAnchor: [20, 40], html: '<div class="pin-new"></div>' }) }).addTo(picker);
+          pickerPin.on("dragend", () => { const q = pickerPin.getLatLng(); setDraftLoc(q.lat, q.lng, null, "map"); });
+          if (draft.acc && draft.src === "gps") L.circle([draft.lat, draft.lng], { radius: draft.acc, color: "#A47A33", weight: 1, fillOpacity: .08, interactive: false }).addTo(picker);
+        }
       }, 60);
     } else {
       $("#picker").hidden = true;
     }
-    $("#gpsBtn").addEventListener("click", async () => {
-      $("#locStatus").className = "loc-status"; $("#locStatus").textContent = "מאתרים את המיקום…";
-      try { const [lat, lng] = await getPosition(); setLoc(lat, lng, true); }
-      catch (e) { draft.locState = "לא הצלחנו לאתר מיקום אוטומטית. געו במפה או כתבו כתובת."; $("#locStatus").textContent = draft.locState; }
-    });
+    $("#gpsBtn").addEventListener("click", () => autoLocate(true));
+    if (!draft.lat && draft.gpsState !== "busy") autoLocate();
+    locUI();
   }
 
   if (step === 2) {
@@ -983,29 +1206,38 @@ function renderStep() {
       <h3 class="q">מה סוג המפגע?</h3>
       <p class="hint">הבחירה קובעת לאיזו מחלקה בעירייה הפנייה מיועדת.</p>
       <div class="cats" role="radiogroup" aria-label="סוג המפגע">
-        ${CATS.map(c => `<button class="cat" type="button" role="radio" data-cat="${c.id}" aria-checked="${draft.cat === c.id}">
-          <span class="cat-badge">${ico(c.id)}</span><span class="cat-txt"><b>${c.name}</b><small>${c.hint}</small></span></button>`).join("")}
-      </div>`;
+        ${CATS.map(c => `<button class="cat" type="button" role="radio" data-cat="${esc(c.id)}" aria-checked="${draft.cat === c.id}">
+          <span class="cat-badge">${ico(c.icon)}</span><span class="cat-txt"><b>${c.name}</b><small>${c.hint}</small></span></button>`).join("")}
+      </div>
+      <div id="subBox"></div>`;
     foot.innerHTML = `${back}<button class="btn btn-primary" type="button" id="nextBtn" ${draft.cat ? "" : "disabled"}>המשך${ico("arrowL")}</button>`;
+    const subUI = () => {
+      const c = draft.cat ? catById(draft.cat) : null, box = $("#subBox");
+      box.innerHTML = c && c.subs && c.subs.length ? `<div class="field"><label>מה בדיוק? (לא חובה)</label><div class="subs">${c.subs.map(x => `<button class="chip" type="button" data-sub="${esc(x)}" aria-pressed="${draft.sub === x}">${esc(x)}</button>`).join("")}</div></div>` : "";
+      box.querySelectorAll("[data-sub]").forEach(b => b.addEventListener("click", () => { draft.sub = draft.sub === b.dataset.sub ? "" : b.dataset.sub; subUI(); }));
+    };
     body.querySelectorAll(".cat").forEach(b => b.addEventListener("click", () => {
+      if (draft.cat !== b.dataset.cat) draft.sub = "";
       draft.cat = b.dataset.cat;
       body.querySelectorAll(".cat").forEach(x => x.setAttribute("aria-checked", String(x === b)));
-      $("#nextBtn").disabled = false;
+      $("#nextBtn").disabled = false; subUI();
+      setTimeout(() => { const sb = $("#subBox"); sb && sb.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 50);
     }));
+    subUI();
   }
 
   if (step === 3) {
     const c = catById(draft.cat);
     body.innerHTML = `${stepper()}
       <h3 class="q">עוד כמה מילים</h3>
-      <div class="dest-row">${ico(draft.cat)}<div><b>${c.name}</b><span>יופנה אל ${c.dept}</span></div></div>
+      <div class="dest-row">${ico(c.icon)}<div><b>${esc(c.name)}${draft.sub ? " · " + esc(draft.sub) : ""}</b><span>יופנה אל ${esc(c.dept)}</span></div></div>
       <div class="field"><label for="descIn">מה רואים? (לא חובה)</label>
-        <textarea class="textarea" id="descIn" maxlength="400" placeholder="לדוגמה: בור בקוטר חצי מטר בנתיב הימני, מסוכן לרוכבי אופניים">${esc(draft.desc)}</textarea></div>
+        <textarea class="textarea" id="descIn" maxlength="600" placeholder="לדוגמה: בור בקוטר חצי מטר בנתיב הימני, מסוכן לרוכבי אופניים">${esc(draft.desc)}</textarea></div>
       <div class="two">
         <div class="field"><label for="nmIn">שם</label><input class="input" id="nmIn" value="${esc(state.name)}" autocomplete="name" placeholder="לא חובה"></div>
         <div class="field"><label for="phIn">טלפון לחזרה</label><input class="input num" id="phIn" value="${esc(state.phone)}" inputmode="tel" autocomplete="tel" placeholder="לא חובה" dir="ltr" style="text-align:right"></div>
       </div>`;
-    foot.innerHTML = `${back}<button class="btn btn-primary" type="button" id="nextBtn">להכנת הפנייה${ico("arrowL")}</button>`;
+    foot.innerHTML = `${back}<button class="btn btn-primary" type="button" id="nextBtn">${ico("check")}שליחה למוקד</button>`;
     $("#descIn").addEventListener("input", e => draft.desc = e.target.value);
     $("#nmIn").addEventListener("input", e => { state.name = e.target.value.trim(); save(); });
     $("#phIn").addEventListener("input", e => { state.phone = e.target.value.trim(); save(); });
@@ -1015,16 +1247,19 @@ function renderStep() {
   const nb = $("#nextBtn");
   nb && nb.addEventListener("click", () => {
     if (step < 3) { step++; renderStep(); return; }
-    // Create the report
-    const r = {
-      id: "ת-" + (++state.seq), city: state.city, mine: true, demo: false,
-      cat: draft.cat, lat: draft.lat, lng: draft.lng, addr: draft.addr.trim(), desc: draft.desc.trim(),
-      photo: draft.photo, created: Date.now(), status: "open", metoo: 1, sentAt: null, fixedAt: null
-    };
-    state.reports.push(r); save(); render();
-    openSend(r, false);
+    submitReport();
   });
   body.scrollTop = 0;
+}
+
+function localReportFromDraft() {
+    const r = {
+      id: "ת-" + (++state.seq), city: state.city, mine: true, demo: false,
+      cat: draft.cat, lat: draft.lat, lng: draft.lng, acc: draft.src === "gps" ? draft.acc : null, near: (draft.near || []).slice(0, 2), addr: draft.addr.trim(), desc: draft.desc.trim(),
+      photos: draft.photos.slice(), created: Date.now(), status: "open", metoo: 1, sentAt: null, fixedAt: null
+    };
+    state.reports.push(r); save(); render();
+    return r;
 }
 
 function openSend(r, reminder) {
@@ -1032,15 +1267,17 @@ function openSend(r, reminder) {
   const waNum = normPhone(state.wa);
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(text)}`;
   const mailUrl = `mailto:${encodeURIComponent(state.mail || "")}?subject=${encodeURIComponent(`${reminder ? "תזכורת – " : ""}${catById(r.cat).name} – ${r.addr || state.city} (${r.id})`)}&body=${encodeURIComponent(text)}`;
-  let canShareFile = false, file = null;
-  try { if (r.photo && navigator.canShare) { file = dataUrlToFile(r.photo, `${r.id}.jpg`); canShareFile = navigator.canShare({ files: [file] }); } } catch (e) {}
+  const pics = photosOf(r);
+  let canShareFile = false, files = [];
+  try { if (pics.length && navigator.canShare) { files = pics.map((p, i) => dataUrlToFile(p, `${r.id}-${i + 1}.jpg`)); canShareFile = navigator.canShare({ files }); } } catch (e) {}
   $("#flowTitle").textContent = reminder ? "תזכורת למוקד" : "הפנייה מוכנה";
   if (picker) { picker.remove(); picker = null; }
   $("#flowBody").innerHTML = `
     <h3 class="q">${reminder ? "שולחים תזכורת" : "נשאר רק לשלוח"}</h3>
-    <p class="hint">ניסחנו פנייה מסודרת. בוחרים איך לשלוח, וההודעה נפתחת מוכנה. ${r.photo ? "בוואטסאפ ובמייל צרפו גם את התמונה." : ""}</p>
+    <p class="hint">ניסחנו פנייה מסודרת. בוחרים איך לשלוח, וההודעה נפתחת מוכנה. ${pics.length && !canShareFile ? `בוואטסאפ ובמייל צרפו גם את ${pics.length === 1 ? "התמונה" : "התמונות"}.` : ""}</p>
+    ${pics.length ? `<div class="shots">${pics.map(p => `<div class="shot"><img src="${p}" alt=""></div>`).join("")}</div>` : ""}
     <div class="letter" id="letter">${esc(text)}</div>
-    ${canShareFile ? `<button class="btn btn-brass btn-block" type="button" id="shareBtn">${ico("share")}שליחה עם התמונה (וואטסאפ ועוד)</button>` : ""}
+    ${canShareFile ? `<button class="btn btn-brass btn-block" type="button" id="shareBtn">${ico("share")}שליחה עם ${pics.length === 1 ? "התמונה" : `${pics.length} התמונות`} (וואטסאפ ועוד)</button>` : ""}
     <div class="btn-row">
       <a class="btn btn-primary" id="waBtn" href="${waUrl}" target="_blank" rel="noopener">${ico("chat")}וואטסאפ</a>
       <a class="btn btn-ghost" id="mailBtn" href="${mailUrl}" target="_blank" rel="noopener">${ico("mail")}מייל</a>
@@ -1061,7 +1298,7 @@ function openSend(r, reminder) {
   $("#copyBtn").addEventListener("click", () => copyText(text));
   const sb = $("#shareBtn");
   sb && sb.addEventListener("click", async () => {
-    try { await navigator.share({ files: [file], text, title: "פנייה למוקד 106" }); markSent(); } catch (e) {}
+    try { await navigator.share({ files, text, title: "פנייה למוקד 106" }); markSent(); } catch (e) {}
   });
   $("#editDest").addEventListener("click", () => openSettings());
   $("#laterBtn").addEventListener("click", () => { hideSheet(); toast("נשמר ב'הדיווחים שלי'"); });
@@ -1070,6 +1307,212 @@ function openSend(r, reminder) {
     toast(reminder ? "התזכורת נרשמה" : "תודה! הדיווח נשמר ומופיע במפה");
   });
 }
+
+/* ================= In-app camera ================= */
+let camStream = null, camFacing = "environment";
+async function startStream() {
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  camStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: camFacing }, width: { ideal: 1920 }, height: { ideal: 1440 } } });
+  const v = $("#camVideo"); v.srcObject = camStream; await v.play().catch(() => {});
+}
+function camRefresh() {
+  const n = draft.photos.length;
+  $("#camCount").textContent = `${n} מתוך ${MAX_PHOTOS}`;
+  $("#camStrip").innerHTML = draft.photos.slice(-4).map(p => `<img src="${p}" alt="">`).join("");
+  $("#camShutter").disabled = n >= MAX_PHOTOS;
+  $("#camDone").textContent = n ? `סיום (${n})` : "סיום";
+}
+async function openCamera() {
+  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { $("#camFallback").click(); return; }
+  const cam = $("#cam"); cam.hidden = false; $("#camMsg").hidden = true; camRefresh();
+  try { await startStream(); }
+  catch (e) {
+    cam.hidden = true;
+    toast("אין גישה למצלמה. פותחים את מצלמת הטלפון במקום");
+    $("#camFallback").click();
+  }
+}
+function closeCamera() {
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  camStream = null; $("#camVideo").srcObject = null; $("#cam").hidden = true;
+  if (step === 0 && $("#flow").classList.contains("on")) renderStep();
+}
+$("#camShutter").addEventListener("click", () => {
+  const v = $("#camVideo"); if (!v.videoWidth || draft.photos.length >= MAX_PHOTOS) return;
+  const k = Math.min(1, 1200 / Math.max(v.videoWidth, v.videoHeight));
+  const cv = document.createElement("canvas"); cv.width = Math.round(v.videoWidth * k); cv.height = Math.round(v.videoHeight * k);
+  cv.getContext("2d").drawImage(v, 0, 0, cv.width, cv.height);
+  draft.photos.push(cv.toDataURL("image/jpeg", .74));
+  const f = $("#camFlash"); f.classList.add("on"); requestAnimationFrame(() => requestAnimationFrame(() => f.classList.remove("on")));
+  try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
+  camRefresh();
+  if (draft.photos.length >= MAX_PHOTOS) { toast(`צילמתם ${MAX_PHOTOS} תמונות`); setTimeout(closeCamera, 450); }
+});
+$("#camDone").addEventListener("click", closeCamera);
+$("#camClose").addEventListener("click", closeCamera);
+$("#camFlip").addEventListener("click", async () => { camFacing = camFacing === "environment" ? "user" : "environment"; try { await startStream(); } catch (e) {} });
+
+/* ================= Call-center connection (Firebase, shared with moked-ashkelon) ================= */
+const FB_CFG = { apiKey: "AIzaSyA5sYRoNjRfVpKNHEOE3ixm2P5qh26Fi3o", authDomain: "moked-ashkelon.firebaseapp.com", projectId: "moked-ashkelon",
+  storageBucket: "moked-ashkelon.firebasestorage.app", messagingSenderId: "285137318703", appId: "1:285137318703:web:934aaef1bc78d92c2667da" };
+const FB_SDK = "https://www.gstatic.com/firebasejs/12.4.0/";
+const CLOUD_STATUS = { new: "open", in_progress: "progress", done: "fixed", rejected: "rejected" };
+const cloud = { fb: null, user: null, mine: [], pub: [], loaded: false, unsub: [] };
+const tsMs = t => t && t.toMillis ? t.toMillis() : (typeof t === "number" ? t : Date.now());
+function fromCloud(id, d, isPublic) {
+  const created = tsMs(d.createdAt), st = CLOUD_STATUS[d.status] || "open";
+  return { id, cloud: true, mine: !isPublic, cat: d.category, sub: d.sub || "", dept: d.dept || "", lat: d.lat, lng: d.lng,
+    addr: d.addr || "", desc: d.desc || "", note: d.note || "", history: d.history || [], photos: d.photo ? [d.photo] : [],
+    created, status: st, metoo: 1, sentAt: created, fixedAt: st === "fixed" ? tsMs(d.updatedAt) : null };
+}
+async function initCloud() {
+  try {
+    const [appM, A, F] = await Promise.all([import(FB_SDK + "firebase-app.js"), import(FB_SDK + "firebase-auth.js"), import(FB_SDK + "firebase-firestore.js")]);
+    const app = appM.initializeApp(FB_CFG);
+    cloud.fb = { A, F, auth: A.getAuth(app), db: F.getFirestore(app) };
+    try { await A.getRedirectResult(cloud.fb.auth); } catch (e) {}
+    loadCloudCategories();
+    A.onAuthStateChanged(cloud.fb.auth, u => { cloud.user = u; watchCloud(); render(); });
+  } catch (e) { console.warn("cloud offline", e); }
+}
+async function loadCloudCategories() {
+  try {
+    const { F, db } = cloud.fb;
+    const snap = await F.getDoc(F.doc(db, "config", "categories"));
+    const list = snap.exists() && Array.isArray(snap.data().list) ? snap.data().list : null;
+    if (list && list.length) setCats(list);
+  } catch (e) {}
+}
+function setCats(list) {
+  const hz = list.filter(c => (c.kind || "hazard") === "hazard");
+  if (!hz.length) return;
+  CATS = hz.map(c => ({ id: c.name, name: c.name, dept: c.dept || "מוקד", subs: c.subs || [], hint: (c.subs || []).slice(0, 2).join(", ") || "כל דבר אחר", icon: iconFor(c.name) }));
+}
+function watchCloud() {
+  cloud.unsub.forEach(f => { try { f(); } catch (e) {} }); cloud.unsub = []; cloud.mine = []; cloud.pub = []; cloud.loaded = false;
+  if (!cloud.user) return;
+  const { F, db } = cloud.fb;
+  cloud.unsub.push(F.onSnapshot(F.query(F.collection(db, "reports"), F.where("uid", "==", cloud.user.uid)), snap => {
+    cloud.mine = snap.docs.map(d => fromCloud(d.id, d.data(), false)); cloud.loaded = true; render();
+  }, () => { cloud.loaded = true; render(); }));
+  cloud.unsub.push(F.onSnapshot(F.query(F.collection(db, "public"), F.where("status", "in", ["new", "in_progress", "done"])), snap => {
+    cloud.pub = snap.docs.map(d => fromCloud(d.id, d.data(), true)).filter(r => typeof r.lat === "number"); render();
+  }, () => {}));
+}
+async function cloudSignIn() {
+  const { A, auth } = cloud.fb; const pr = new A.GoogleAuthProvider();
+  try { await A.signInWithPopup(auth, pr); }
+  catch (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") return A.signInWithRedirect(auth, pr);
+    if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") throw e;
+  }
+}
+const G_LOGO = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.2 44 33 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+function renderAccount() {
+  const b = $("#acctBtn"); if (!b) return;
+  if (!cloud.fb) { b.hidden = true; return; }
+  b.hidden = false;
+  if (cloud.user) {
+    const nm = (cloud.user.displayName || cloud.user.email || "").split(" ")[0];
+    b.innerHTML = `<span class="live-dot" aria-hidden="true"></span>${esc(nm) || "מחובר"}`; b.title = "מחובר למוקד. לחצו להתנתקות";
+  } else { b.innerHTML = `${G_LOGO}התחברות`; b.title = "התחברות עם Google"; }
+}
+// Several photos fit the call-center record as one collage image.
+function makeCollage(photos) {
+  return new Promise(async res => {
+    if (!photos.length) return res("");
+    const imgs = await Promise.all(photos.map(src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; })));
+    const ok = imgs.filter(Boolean); if (!ok.length) return res("");
+    const draw = (W, q) => {
+      const n = ok.length, cols = n === 1 ? 1 : n <= 4 ? 2 : 3, rows = Math.ceil(n / cols), cell = Math.floor(W / cols), gap = n > 1 ? 6 : 0;
+      const cv = document.createElement("canvas"); cv.width = cols * cell; cv.height = n === 1 ? Math.round(W * ok[0].height / ok[0].width) : rows * cell;
+      const g = cv.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, cv.width, cv.height);
+      ok.forEach((im, i) => {
+        if (n === 1) { g.drawImage(im, 0, 0, cv.width, cv.height); return; }
+        const x = (i % cols) * cell, y = Math.floor(i / cols) * cell, s = Math.min(im.width, im.height);
+        g.drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, x + gap / 2, y + gap / 2, cell - gap, cell - gap);
+        g.fillStyle = "rgba(9,24,29,.75)"; g.beginPath(); g.arc(x + 22, y + 22, 13, 0, 7); g.fill();
+        g.fillStyle = "#fff"; g.font = "bold 15px Arial"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(i + 1), x + 22, y + 23);
+      });
+      return cv.toDataURL("image/jpeg", q);
+    };
+    let W = 1200, q = .72, out = "";
+    for (let k = 0; k < 9; k++) { out = draw(W, q); if (out.length <= 290000) return res(out); if (q > .5) q -= .08; else W = Math.round(W * .82); }
+    res(out.length <= 300000 ? out : "");
+  });
+}
+let sending = false;
+async function submitReport() {
+  if (sending) return;
+  if (!cloud.fb) { const r = localReportFromDraft(); openSend(r, false); toast("אין חיבור למערכת המוקד. שולחים בוואטסאפ"); return; }
+  if (!cloud.user) { showSignIn(); return; }
+  sending = true;
+  const nb = $("#nextBtn"); if (nb) { nb.disabled = true; nb.innerHTML = `<span class="spin"></span>שולחים…`; }
+  try {
+    const { F, db } = cloud.fb, c = catById(draft.cat), u = cloud.user;
+    let addr = (draft.addr || "").trim();
+    const near = (draft.near || []).filter(n => !addr.includes(n));
+    if (near.length && addr.length < 90) addr += ` (ליד ${near[0]})`;
+    const photo = await makeCollage(draft.photos);
+    const id = F.doc(F.collection(db, "reports")).id, now = F.serverTimestamp(), b = F.writeBatch(db);
+    const lat = draft.lat != null ? +draft.lat.toFixed(6) : null, lng = draft.lng != null ? +draft.lng.toFixed(6) : null;
+    if (lat == null) throw Object.assign(new Error("no-location"), { code: "no-location" });
+    b.set(F.doc(db, "reports", id), {
+      uid: u.uid, reporter: (state.name || u.displayName || "").slice(0, 80), email: u.email || "", phone: (state.phone || "").replace(/[^\d+\-\s]/g, "").slice(0, 20),
+      kind: "hazard", category: c.name.slice(0, 60), sub: draft.sub || "", dept: c.dept || "", desc: (draft.desc || "").trim().slice(0, 600),
+      addr: addr.slice(0, 120), lat, lng, photo, status: "new", note: "", createdAt: now, updatedAt: now,
+      history: [{ status: "new", at: new Date().toISOString(), note: "" }]
+    });
+    b.set(F.doc(db, "public", id), { category: c.name.slice(0, 60), sub: draft.sub || "", lat, lng, status: "new", createdAt: now });
+    await b.commit();
+    showDone(id);
+  } catch (e) {
+    console.error(e);
+    showSendError(e && e.code === "no-location" ? "חסר מיקום מדויק. חזרו לשלב המיקום וסמנו את המפגע על המפה." : "השליחה למוקד לא הצליחה. בדקו את החיבור לאינטרנט ונסו שוב.");
+  } finally { sending = false; }
+}
+function showSignIn() {
+  $("#flowTitle").textContent = "כמעט סיימנו";
+  $("#flowBody").innerHTML = `<div class="signin-card">
+      <div class="big">${ico("shield")}</div>
+      <h3 class="q">התחברות קצרה, פעם אחת</h3>
+      <p class="hint" style="margin:0">כך המוקד יודע שהדיווח אמיתי, ואתם תקבלו כאן עדכונים כשהמפגע בטיפול ושהוא טופל.</p>
+      <button class="gbtn" type="button" id="gBtn">${G_LOGO}התחברות עם Google</button>
+      <p class="note" style="justify-content:center">${ico("shield")}<span>הפרטים שלכם גלויים רק לצוות המוקד.</span></p>
+    </div>`;
+  $("#flowFoot").innerHTML = `<button class="btn btn-ghost" type="button" id="backToForm">${ico("arrowR")}חזרה</button><button class="btn btn-ghost" type="button" id="waInstead">${ico("chat")}בוואטסאפ במקום</button>`;
+  $("#gBtn").addEventListener("click", async () => {
+    try { await cloudSignIn(); if (cloud.user) { step = 3; renderStep(); submitReport(); } }
+    catch (e) { toast("ההתחברות לא הצליחה. נסו שוב"); }
+  });
+  $("#backToForm").addEventListener("click", () => { step = 3; renderStep(); });
+  $("#waInstead").addEventListener("click", () => { const r = localReportFromDraft(); openSend(r, false); });
+}
+function showDone(id) {
+  const ref = id.slice(0, 6).toUpperCase();
+  $("#flowTitle").textContent = "הדיווח נשלח";
+  $("#flowBody").innerHTML = `<div class="done-card">
+      <div class="big">${ico("check")}</div>
+      <h3 class="q">הדיווח התקבל במוקד 106</h3>
+      <div class="ref num">מספר פנייה ${esc(ref)}</div>
+      <p class="hint" style="margin:0">הדיווח כבר מופיע אצל המוקדנים. נעדכן אתכם ב"הדיווחים שלי" כשהטיפול יתחיל וכשהמפגע יטופל.</p>
+    </div>`;
+  $("#flowFoot").innerHTML = `<button class="btn btn-primary" type="button" id="doneOk">${ico("check")}מעולה</button>`;
+  $("#doneOk").addEventListener("click", () => { hideSheet(); setView("mine"); });
+  try { navigator.vibrate && navigator.vibrate([30, 60, 30]); } catch (e) {}
+}
+function showSendError(msg) {
+  const nb = $("#nextBtn"); if (nb) { nb.disabled = false; nb.innerHTML = `${ico("check")}שליחה למוקד`; }
+  toast(msg);
+  const body = $("#flowBody");
+  if (body && !$("#sendErr")) body.insertAdjacentHTML("beforeend", `<div class="sug-warn" id="sendErr">${ico("hazard")}<span>${esc(msg)} אפשר גם <button class="btn-text btn" type="button" id="errWa" style="min-height:0;padding:0">לשלוח בוואטסאפ</button>.</span></div>`);
+  const w = $("#errWa"); w && w.addEventListener("click", () => { const r = localReportFromDraft(); openSend(r, false); });
+}
+$("#acctBtn").addEventListener("click", async () => {
+  if (!cloud.fb) return;
+  if (cloud.user) { await cloud.fb.A.signOut(cloud.fb.auth); toast("התנתקתם"); }
+  else { try { await cloudSignIn(); } catch (e) { toast("ההתחברות לא הצליחה. נסו שוב"); } }
+});
 
 /* ================= Settings ================= */
 function openSettings() {
@@ -1103,12 +1546,13 @@ $("#filters").addEventListener("click", e => {
   render();
 });
 $("#locateBtn").addEventListener("click", async () => {
-  try { const p = await getPosition(); map && map.flyTo(p, 17); }
+  try { const p = await getPosition(); map && map.flyTo([p[0], p[1]], 17); }
   catch (e) { toast("אין גישה למיקום. אפשר להזיז את המפה ידנית"); }
 });
 
 initMap();
 render();
+initCloud();
 if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude|anthropic/.test(location.hostname)) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
