@@ -174,7 +174,7 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .map-fallback { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); font-size: 14px; }
 .locate-btn {
   position: absolute; bottom: 12px; right: 12px; z-index: 5;
-  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  height: 40px; padding: 0 14px; gap: 6px; border-radius: 20px; display: flex; align-items: center; font: inherit; font-weight: 700; font-size: 14px;
   background: var(--surface); color: var(--primary); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 .pin {
@@ -425,6 +425,15 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 
 /* Location suggestion */
 .loc-card { display: flex; flex-direction: column; gap: 10px; }
+.toast-card { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: min(420px, calc(100vw - 32px)); z-index: 600; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.geo-ask { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); }
+.geo-ask p { margin: 0; font-size: 14px; color: var(--ink); }
+.geo-help { font-size: 13px; line-height: 1.6; color: var(--ink); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.geo-help b { font-weight: 800; }
+.addr-row { display: flex; gap: 8px; }
+.addr-row .input { flex: 1; min-width: 0; }
+.addr-row .btn { min-height: 0; padding: 0 14px; white-space: nowrap; }
+.me-dot { width: 16px; height: 16px; border-radius: 50%; background: #2F7DF6; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47,125,246,.25); }
 .loc-status .ico { width: 18px; height: 18px; }
 .loc-status b { font-weight: 800; }
 .sug { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 6px; }
@@ -516,8 +525,9 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
     <div class="map-wrap">
       <div class="map" id="map" dir="ltr" aria-label="מפת הדיווחים בעיר"></div>
       <div class="map-fallback" id="mapFallback" hidden>המפה לא נטענה כרגע. רשימת הדיווחים זמינה למטה.</div>
-      <button class="locate-btn" id="locateBtn" type="button" aria-label="התמקד במיקום שלי">
+      <button class="locate-btn" id="locateBtn" type="button" aria-label="הצגת המיקום שלי במפה">
         <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg>
+        <span>המיקום שלי</span>
       </button>
     </div>
   </div>
@@ -817,11 +827,41 @@ function normPhone(p) {
   if (d.startsWith("0")) d = "972" + d.slice(1);
   return d;
 }
-function getPosition() {
+function getPosition(fast) {
   return new Promise((res, rej) => {
-    if (!navigator.geolocation) return rej(new Error("no-geo"));
-    navigator.geolocation.getCurrentPosition(p => res([p.coords.latitude, p.coords.longitude, Math.round(p.coords.accuracy || 0)]), rej, { enableHighAccuracy: true, timeout: 12000, maximumAge: 15000 });
+    if (!navigator.geolocation) return rej(Object.assign(new Error("no-geo"), { code: 2 }));
+    navigator.geolocation.getCurrentPosition(p => res([p.coords.latitude, p.coords.longitude, Math.round(p.coords.accuracy || 0)]), rej,
+      fast ? { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 } : { enableHighAccuracy: true, timeout: 12000, maximumAge: 15000 });
   });
+}
+// permission state without asking: "granted" | "prompt" | "denied" | "unknown"
+async function geoPermission() {
+  try { if (navigator.permissions) return (await navigator.permissions.query({ name: "geolocation" })).state; } catch (e) {}
+  return "unknown";
+}
+// how to turn location back on, for the device in hand
+function geoHelpHTML() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua)) return `<b>איך מאשרים מיקום באייפון:</b><br>
+    1. ב-Safari לחצו על <b>aA</b> (או על הסמל משמאל לכתובת) ← <b>הגדרות אתר</b> ← <b>מיקום</b> ← <b>אפשר</b>.<br>
+    2. אם זה לא עוזר: <b>הגדרות</b> ← <b>פרטיות ואבטחה</b> ← <b>שירותי מיקום</b> ← ודאו שהם מופעלים, ואז <b>אתרי Safari</b> ← <b>בזמן השימוש ביישום</b>.<br>
+    3. חזרו לכאן ולחצו "אשרו את המיקום שלי".`;
+  if (/Android/.test(ua)) return `<b>איך מאשרים מיקום באנדרואיד:</b><br>
+    1. לחצו על הסמל שליד הכתובת בראש הדפדפן ← <b>הרשאות</b> ← <b>מיקום</b> ← <b>אפשר</b>.<br>
+    2. ודאו שה<b>מיקום</b> בטלפון מופעל (משיכה מלמעלה ← מיקום).<br>
+    3. חזרו לכאן ולחצו "אשרו את המיקום שלי".`;
+  return `<b>איך מאשרים מיקום במחשב:</b> לחצו על סמל המנעול שליד הכתובת בראש הדפדפן ← <b>מיקום</b> ← <b>אפשר</b>, ואז לחצו "אשרו את המיקום שלי".`;
+}
+// typed address → point on the map (searched inside the chosen city)
+async function forwardGeocode(q) {
+  const [clat, clng] = cityCenter(), city = ($("#cityName") && $("#cityName").textContent) || "";
+  const vb = [clng - 0.12, clat + 0.1, clng + 0.12, clat - 0.1].join(",");
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=he&limit=1&countrycodes=il&viewbox=${vb}&bounded=1&q=${encodeURIComponent(q + (city && !q.includes(city) ? ", " + city : ""))}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j && j[0] ? [+j[0].lat, +j[0].lon] : null;
+  } catch (e) { return null; }
 }
 const metersBetween = (a, b, c, d) => { const k = Math.PI / 180, x = (d - b) * k * Math.cos((a + c) / 2 * k), y = (c - a) * k; return Math.sqrt(x * x + y * y) * 6371000; };
 async function reverseGeocode(lat, lng) {
@@ -899,9 +939,9 @@ function locUI() {
   if (draft.gpsState === "busy" && !draft.lat) status = `<span class="spin"></span>מאתרים את המיקום שלכם…`;
   else if (draft.lat && draft.src === "gps") status = `${ico("locate")}המיקום אותר${acc ? ` · דיוק של כ־<b class="num">${acc}</b> מ׳` : ""}`;
   else if (draft.lat) status = `${ico("pin")}המיקום סומן על המפה`;
-  else if (draft.gpsState === "denied") status = `${ico("pin")}אין הרשאת מיקום. געו במפה במקום המפגע`;
-  else if (draft.gpsState === "fail") status = `${ico("pin")}לא הצלחנו לאתר מיקום. געו במפה במקום המפגע`;
-  else status = `${ico("pin")}געו במפה במקום המפגע`;
+  else if (draft.gpsState === "denied") status = `${ico("pin")}המיקום לא אושר. אפשר לגעת במפה במקום המפגע או לכתוב כתובת`;
+  else if (draft.gpsState === "fail") status = `${ico("pin")}לא הצלחנו לאתר מיקום. געו במפה במקום המפגע או כתבו כתובת`;
+  else status = `${ico("pin")}געו במפה במקום המפגע, או כתבו כתובת למטה`;
   const weak = draft.src === "gps" && acc > 60;
   let suggest = "";
   if (draft.lat && draft.looking) suggest = `<div class="sug-line muted"><span class="spin"></span>מזהים את שם הרחוב…</div>`;
@@ -915,9 +955,14 @@ function locUI() {
     if (g && g.place && g.place !== main) chips.push(`ליד ${g.place}`);
     if (chips.length) suggest += `<div class="sug-label">או בחרו תיאור אחר:</div><div class="chips sug-chips">${chips.map(c => `<button class="chip" type="button" data-addr="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
   } else if (draft.lat) suggest = `<div class="sug-line muted">לא מצאנו שם רחוב לנקודה הזו. כתבו ציון דרך למטה.</div>`;
-  box.innerHTML = `<div class="loc-status ${draft.lat ? "ok" : ""}">${status}</div>
+  const ask = !draft.lat && draft.gpsState !== "busy" && navigator.geolocation
+    ? `<div class="geo-ask"><p>${draft.gpsState === "denied" ? "כדי שנכתוב את הכתובת אוטומטית, צריך לאשר גישה למיקום." : "נשתמש במיקום שלכם כדי לסמן את המפגע ולכתוב את הכתובת אוטומטית."}</p>
+        <button class="btn btn-primary" type="button" id="askGeo">${ico("locate")}אשרו את המיקום שלי</button>
+        ${draft.gpsState === "denied" ? `<div class="geo-help">${geoHelpHTML()}</div>` : ""}</div>` : "";
+  box.innerHTML = `${ask}<div class="loc-status ${draft.lat ? "ok" : ""}">${status}</div>
     ${weak ? `<div class="sug-warn">${ico("locate")}הדיוק נמוך. כדאי לגרור את הסיכה בדיוק למקום המפגע.</div>` : ""}
     ${suggest ? `<div class="sug">${suggest}</div>` : ""}`;
+  const ag = $("#askGeo"); ag && ag.addEventListener("click", () => autoLocate(true));
   box.querySelectorAll("[data-addr]").forEach(b => b.addEventListener("click", () => {
     draft.addr = b.dataset.addr; draft.addrManual = true; const i = $("#addrIn"); if (i) i.value = draft.addr; updNextLoc();
   }));
@@ -1194,16 +1239,29 @@ function renderStep() {
   if (step === 1) {
     body.innerHTML = `${stepper()}
       <h3 class="q">איפה זה?</h3>
-      <p class="hint">איתרנו את המיקום שלכם ואת שם הרחוב. אם המפגע במקום אחר, גררו את הסיכה או געו במפה.</p>
+      <p class="hint">אשרו מיקום ונכתוב את הכתובת לבד. אפשר גם לגעת במפה במקום המפגע (הכתובת תיכתב לפי הסימון) או לכתוב כתובת בעצמכם.</p>
       <div class="picker" id="picker" dir="ltr"></div>
       <div class="loc-card" id="locCard"></div>
       <div class="field"><label for="addrIn">הכתובת שתישלח למוקד</label>
-        <input class="input" id="addrIn" value="${esc(draft.addr)}" placeholder="לדוגמה: רחוב הרצל 12, ליד הקיוסק">
-        <small>אפשר להוסיף ציון דרך, למשל "מול הסופר" או "ליד תחנת האוטובוס".</small></div>
+        <div class="addr-row"><input class="input" id="addrIn" value="${esc(draft.addr)}" placeholder="לדוגמה: רחוב הרצל 12, ליד הקיוסק" enterkeyhint="search">
+          <button class="btn btn-ghost" type="button" id="findAddr">${ico("pin")}מצא במפה</button></div>
+        <small>כותבים כתובת ולוחצים "מצא במפה", והסיכה תזוז לשם. אפשר להוסיף ציון דרך, למשל "מול הסופר".</small></div>
       <button class="btn btn-ghost" type="button" id="gpsBtn">${ico("locate")}אתרו אותי שוב</button>`;
     foot.innerHTML = `${back}<button class="btn btn-primary" type="button" id="nextBtn">המשך${ico("arrowL")}</button>`;
     const addrIn = $("#addrIn");
     addrIn.addEventListener("input", () => { draft.addr = addrIn.value; draft.addrManual = addrIn.value.trim().length > 0; updNextLoc(); });
+    const findAddr = async () => {
+      const q = addrIn.value.trim(); if (q.length < 3) { toast("כתבו כתובת קודם"); addrIn.focus(); return; }
+      const b = $("#findAddr"); b.disabled = true;
+      const pt = await forwardGeocode(q.replace(/^(ליד|מול|פינת)\s+/, ""));
+      b.disabled = false;
+      if (!pt) { toast("לא מצאנו את הכתובת במפה. אפשר לגעת במפה במקום המפגע"); return; }
+      draft.addrManual = true; setDraftLoc(pt[0], pt[1], null, "addr");
+      if (picker) picker.setView(pt, 18);
+      toast("הסיכה הועברה לכתובת. אפשר לגרור אותה לדיוק");
+    };
+    $("#findAddr").addEventListener("click", findAddr);
+    addrIn.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); findAddr(); } });
     if (hasL()) {
       setTimeout(() => {
         if (step !== 1 || !$("#picker")) return;
@@ -1221,7 +1279,8 @@ function renderStep() {
       $("#picker").hidden = true;
     }
     $("#gpsBtn").addEventListener("click", () => autoLocate(true));
-    if (!draft.lat && draft.gpsState !== "busy") autoLocate();
+    // ask for location automatically only if it's already allowed; otherwise wait for the button (iPhone handles a tap-triggered request best)
+    if (!draft.lat && draft.gpsState !== "busy") geoPermission().then(st => { if (st === "granted" || (st === "unknown" && !/iPhone|iPad|iPod/.test(navigator.userAgent))) autoLocate(); else if (st === "denied") { draft.gpsState = "denied"; locUI(); } });
     locUI();
   }
 
@@ -1569,16 +1628,33 @@ $("#filters").addEventListener("click", e => {
   document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
   render();
 });
+let meMarker = null;
 $("#locateBtn").addEventListener("click", async () => {
-  try { const p = await getPosition(); map && map.flyTo([p[0], p[1]], 17); }
-  catch (e) { toast("אין גישה למיקום. אפשר להזיז את המפה ידנית"); }
+  const b = $("#locateBtn"); b.disabled = true;
+  try {
+    const p = await getPosition(true);
+    if (map) {
+      map.flyTo([p[0], p[1]], 17);
+      if (!meMarker) meMarker = L.marker([p[0], p[1]], { interactive: false, icon: L.divIcon({ className: "", iconSize: [16, 16], iconAnchor: [8, 8], html: '<div class="me-dot"></div>' }) }).addTo(map);
+      else meMarker.setLatLng([p[0], p[1]]);
+    }
+  } catch (e) {
+    if (e && e.code === 1) showGeoHelp(); else toast("לא הצלחנו לאתר מיקום. נסו שוב בעוד רגע");
+  }
+  b.disabled = false;
 });
+function showGeoHelp() {
+  let d = $("#geoHelpDlg");
+  if (!d) { d = document.createElement("div"); d.id = "geoHelpDlg"; d.className = "toast-card"; document.body.appendChild(d); }
+  d.innerHTML = `<div class="geo-help">${geoHelpHTML()}</div><button class="btn btn-primary" type="button" id="geoHelpOk">הבנתי</button>`;
+  d.hidden = false; $("#geoHelpOk").onclick = () => d.hidden = true;
+}
 
 initMap();
 render();
 initCloud();
 // ---- refresh / update: clears the offline copy and loads the newest version from the site
-const APP_VER = "9";
+const APP_VER = "10";
 $("#appVer").textContent = APP_VER;
 async function hardRefresh() {
   $("#refreshBtn").classList.add("spin");
