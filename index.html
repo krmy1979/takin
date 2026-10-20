@@ -386,6 +386,9 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .photo-btns .btn { min-height: 56px; }
 .photo-btns label.btn { position: relative; cursor: pointer; }
 .photo-btns input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.drop-zone { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 13.5px; text-align: center; transition: background .15s, border-color .15s; }
+.drop-zone .ico { width: 18px; height: 18px; color: var(--brass); flex: none; }
+.drop-zone.over { border-color: var(--brass); background: var(--brass-soft); color: var(--ink); }
 .shot-count { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--muted); }
 .shot-count b { color: var(--ink); }
 .meter { display: flex; gap: 4px; }
@@ -1126,7 +1129,9 @@ function stepper() {
   return `<div class="steps" aria-label="שלב ${step + 1} מתוך 4">${STEP_NAMES.map((n, i) =>
     `<div class="step ${i < step ? "done" : i === step ? "cur" : ""}"><i></i>${n}</div>`).join("")}</div>`;
 }
+const IS_TOUCH = matchMedia("(pointer: coarse)").matches;
 function renderStep() {
+  if (step !== 0) document.onpaste = null;
   const body = $("#flowBody"), foot = $("#flowFoot");
   $("#flowTitle").textContent = "דיווח חדש";
   if (picker) { picker.remove(); picker = null; pickerPin = null; }
@@ -1139,9 +1144,10 @@ function renderStep() {
       <p class="hint">מומלץ ${GOOD_PHOTOS} תמונות: אחת מקרוב, אחת מרחוק ואחת שמראה את הסביבה. ככה המוקד מבין מיד במה מדובר ואיפה.</p>
       <div class="photo-btns">
         <button class="btn btn-primary" type="button" id="camBtn" ${full ? "disabled" : ""}>${ico("camera")}פתיחת מצלמה</button>
-        <label class="btn btn-ghost" ${full ? 'aria-disabled="true" style="opacity:.45;pointer-events:none"' : ""}>${ico("share")}מהגלריה
-          <input type="file" id="galleryIn" accept="image/*" multiple aria-label="בחירת תמונות מהגלריה"></label>
+        <label class="btn btn-ghost" ${full ? 'aria-disabled="true" style="opacity:.45;pointer-events:none"' : ""}>${ico("share")}${IS_TOUCH ? "מהגלריה" : "העלאה מהמחשב"}
+          <input type="file" id="galleryIn" accept="image/*" multiple aria-label="בחירת תמונות מהגלריה או מהמחשב"></label>
       </div>
+      <div class="drop-zone" id="dropZone" ${full ? "hidden" : ""}>${ico("share")}<span>${IS_TOUCH ? "אפשר לבחור כמה תמונות מהגלריה בבת אחת" : "אפשר גם לגרור לכאן תמונות מהמחשב, או להדביק תמונה (Ctrl+V)"}</span></div>
       <div class="shot-count"><span><b class="num">${n}</b> מתוך ${MAX_PHOTOS} תמונות${n && n < GOOD_PHOTOS ? ` · עוד ${GOOD_PHOTOS - n} ונגיע למומלץ` : n >= GOOD_PHOTOS ? " · מצוין!" : ""}</span>
         <span class="meter" aria-hidden="true">${Array.from({ length: MAX_PHOTOS }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span></div>
       <div class="shots">
@@ -1161,6 +1167,16 @@ function renderStep() {
       renderStep();
     };
     $("#galleryIn").addEventListener("change", e => addFiles(e.target.files));
+    // drag & drop and paste from the computer
+    const dz = $("#dropZone");
+    body.ondragover = e => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) { e.preventDefault(); dz.classList.add("over"); } };
+    body.ondragleave = e => { if (!body.contains(e.relatedTarget)) dz.classList.remove("over"); };
+    body.ondrop = e => { e.preventDefault(); dz.classList.remove("over"); if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files); };
+    document.onpaste = e => {
+      if (step !== 0 || !e.clipboardData) return;
+      const fs = [...e.clipboardData.items].filter(i => i.kind === "file" && /^image\//.test(i.type)).map(i => i.getAsFile()).filter(Boolean);
+      if (fs.length) { e.preventDefault(); addFiles(fs); }
+    };
     $("#camFallback").addEventListener("change", e => addFiles(e.target.files));
     $("#camBtn").addEventListener("click", () => openCamera());
     body.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { draft.photos.splice(+b.dataset.del, 1); renderStep(); }));
