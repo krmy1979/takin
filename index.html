@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="תקין">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>תקין</title>
+<title>תקין עירוני</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0E2A33">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,6 +125,7 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 .seal .ico { width: 20px; height: 20px; stroke-width: 2.6; }
 .wordmark { font-family: var(--f-display); font-weight: 900; font-size: 30px; line-height: 1; letter-spacing: -.01em; }
 .tag { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.mode-badge { display: inline-block; vertical-align: middle; margin-inline-start: 6px; padding: 3px 9px; border-radius: 999px; font-family: var(--f-body, inherit); font-size: 13px; font-weight: 800; letter-spacing: 0; background: var(--brass-soft); color: var(--brass); }
 .city-btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 12px; border-radius: 999px;
@@ -506,8 +507,8 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
     <div class="brand">
       <div class="seal" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <div>
-        <div class="wordmark">תקין</div>
-        <div class="tag">רואים מפגע? מצלמים. העירייה מקבלת.</div>
+        <div class="wordmark">תקין <span class="mode-badge" id="modeBadge">עירוני</span></div>
+        <div class="tag" id="modeTag">רואים מפגע? מצלמים. המוקד העירוני מטפל ומעדכן אתכם.</div>
       </div>
     </div>
     <div class="top-actions">
@@ -554,6 +555,7 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
     <div class="list" id="list"></div>
     <p class="foot-note">גרסה <span class="num" id="appVer"></span> · <button type="button" class="link-btn" id="refreshLink">בדיקת עדכונים</button></p>
     <p class="foot-note" id="demoNote">דיווחים שמסומנים "דוגמה" נועדו להמחשה בלבד. התחברו כדי לראות את הדיווחים האמיתיים בעיר.</p>
+    <p class="foot-note" id="otherEdition"></p>
   </section>
 
   <!-- MINE VIEW -->
@@ -724,8 +726,16 @@ function iconFor(name) {
 }
 const STATUS = { open: "התקבל", progress: "בטיפול", fixed: "טופל", rejected: "לא לטיפול" };
 
-/* ================= Storage (local now; Firebase later) ================= */
-const KEY = "takin.v2";
+/* ================= Edition =================
+   One code, two apps:
+   • תקין עירוני  (/takin/)      → reports go to the city call-center screen, with sign-in, status tracking and replies
+   • תקין 106     (/takin/106/)  → reports go by WhatsApp to the 106 hotline: no sign-in, no server, any city
+   106/index.html is generated from this file by build-106.py, so every fix reaches both. */
+const MODE = /\/106(\/|$)/.test(location.pathname) ? "106" : "city";
+const IS106 = MODE === "106";
+
+/* ================= Storage ================= */
+const KEY = IS106 ? "takin106.v2" : "takin.v2";
 const DAY = 864e5;
 let state = load();
 function load() {
@@ -1470,6 +1480,7 @@ function fromCloud(id, d, isPublic) {
     created, status: st, metoo: 1, sentAt: created, fixedAt: st === "fixed" ? tsMs(d.updatedAt) : null };
 }
 async function initCloud() {
+  if (IS106) return;   // תקין 106 works without any server
   try {
     const [appM, A, F] = await Promise.all([import(FB_SDK + "firebase-app.js"), import(FB_SDK + "firebase-auth.js"), import(FB_SDK + "firebase-firestore.js")]);
     const app = appM.initializeApp(FB_CFG);
@@ -1548,7 +1559,7 @@ function makeCollage(photos) {
 let sending = false;
 async function submitReport() {
   if (sending) return;
-  if (!cloud.fb) { const r = localReportFromDraft(); openSend(r, false); toast("אין חיבור למערכת המוקד. שולחים בוואטסאפ"); return; }
+  if (!cloud.fb) { const r = localReportFromDraft(); openSend(r, false); if (!IS106) toast("אין חיבור למערכת המוקד. שולחים בוואטסאפ"); return; }
   if (!cloud.user) { showSignIn(); return; }
   sending = true;
   const nb = $("#nextBtn"); if (nb) { nb.disabled = true; nb.innerHTML = `<span class="spin"></span>שולחים…`; }
@@ -1670,15 +1681,26 @@ $("#locateBtn").addEventListener("click", async () => {
 
 initMap();
 render();
+// edition branding
+if (IS106) {
+  $("#modeBadge").textContent = "106";
+  $("#modeTag").textContent = "רואים מפגע? מצלמים ושולחים בוואטסאפ למוקד 106.";
+  document.title = "תקין 106";
+  $("#demoNote").textContent = "דיווחים שמסומנים \"דוגמה\" נועדו להמחשה בלבד. הדיווחים שלכם נשמרים רק בטלפון הזה.";
+  $("#otherEdition").innerHTML = `רוצים לקבל עדכונים על הטיפול בדיווח? <a href="../">נסו את תקין עירוני</a>`;
+} else {
+  document.title = "תקין עירוני";
+  $("#otherEdition").innerHTML = `אין לכם חשבון Google? <a href="106/">שלחו בוואטסאפ עם תקין 106</a>`;
+}
 initCloud();
 // ---- refresh / update: clears the offline copy and loads the newest version from the site
-const APP_VER = "12";
+const APP_VER = "13";
 $("#appVer").textContent = APP_VER;
 async function hardRefresh() {
   $("#refreshBtn").classList.add("spin");
   try {
-    if ("serviceWorker" in navigator) { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
-    if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }
+    if ("serviceWorker" in navigator) { const reg = await navigator.serviceWorker.getRegistration(); if (reg) await reg.unregister(); }
+    if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.filter(k => k.startsWith(IS106 ? "takin106-" : "takin-v")).map(k => caches.delete(k))); }
   } catch (e) {}
   location.replace(location.pathname + "?v=" + Date.now() + location.hash);
 }
