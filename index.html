@@ -132,6 +132,9 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
   font-weight: 700; font-size: 14px; white-space: nowrap;
 }
 .city-btn .ico { width: 16px; height: 16px; color: var(--brass); }
+.link-btn { background: none; border: 0; padding: 0; color: var(--brass); font: inherit; text-decoration: underline; cursor: pointer; }
+#refreshBtn.spin .ico { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .acct img { width: 22px; height: 22px; border-radius: 50%; }
 .acct svg { width: 18px; height: 18px; flex: none; }
@@ -490,6 +493,10 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
       </div>
     </div>
     <div class="top-actions">
+    <button class="city-btn" id="refreshBtn" type="button" aria-label="רענון ועדכון האפליקציה" title="רענון ועדכון לגרסה האחרונה">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      <span>רענון</span>
+    </button>
     <button class="city-btn acct" id="acctBtn" type="button" hidden></button>
     <button class="city-btn" id="cityBtn" type="button" aria-label="בחירת עיר והגדרות">
       <svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
@@ -526,6 +533,7 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
       <button class="chip" type="button" data-f="fixed" aria-pressed="false">טופלו</button>
     </div>
     <div class="list" id="list"></div>
+    <p class="foot-note">גרסה <span class="num" id="appVer"></span> · <button type="button" class="link-btn" id="refreshLink">בדיקת עדכונים</button></p>
     <p class="foot-note" id="demoNote">דיווחים שמסומנים "דוגמה" נועדו להמחשה בלבד. התחברו כדי לראות את הדיווחים האמיתיים בעיר.</p>
   </section>
 
@@ -1569,6 +1577,27 @@ $("#locateBtn").addEventListener("click", async () => {
 initMap();
 render();
 initCloud();
+// ---- refresh / update: clears the offline copy and loads the newest version from the site
+const APP_VER = "8";
+$("#appVer").textContent = APP_VER;
+async function hardRefresh() {
+  $("#refreshBtn").classList.add("spin");
+  try {
+    if ("serviceWorker" in navigator) { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
+    if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }
+  } catch (e) {}
+  location.replace(location.pathname + "?v=" + Date.now() + location.hash);
+}
+$("#refreshBtn").addEventListener("click", hardRefresh);
+$("#refreshLink").addEventListener("click", hardRefresh);
+// when a newer version installs in the background, switch to it once
+if ("serviceWorker" in navigator) {
+  let reloaded = false, hadCtrl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadCtrl || reloaded) return; reloaded = true;
+    toast("גרסה חדשה של תקין – מרענן…"); setTimeout(() => location.reload(), 900);
+  });
+}
 if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude|anthropic/.test(location.hostname)) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
