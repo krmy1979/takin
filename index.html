@@ -426,6 +426,17 @@ h1,h2,h3 { margin: 0; text-wrap: balance; }
 /* Location suggestion */
 .loc-card { display: flex; flex-direction: column; gap: 10px; }
 .toast-card { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: min(420px, calc(100vw - 32px)); z-index: 600; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.geo-modal { position: fixed; inset: 0; z-index: 700; background: rgba(9,24,29,.55); display: flex; align-items: flex-end; justify-content: center; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.geo-modal .box { width: min(420px, 100%); background: var(--surface); border-radius: 22px; padding: 22px 18px 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; text-align: center; }
+.geo-modal .big { width: 64px; height: 64px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; background: var(--brass-soft); color: var(--brass); }
+.geo-modal .big .ico { width: 30px; height: 30px; }
+.geo-modal h3 { margin: 0; font-size: 20px; }
+.geo-modal p { margin: 0; font-size: 15px; color: var(--muted); line-height: 1.55; }
+.geo-modal .btn { min-height: 54px; font-size: 16.5px; }
+.geo-modal .fine { font-size: 12.5px; }
+.geo-note { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.geo-note .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.geo-note .btn { min-height: 40px; font-size: 14px; padding: 0 14px; }
 .geo-ask { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); }
 .geo-ask p { margin: 0; font-size: 14px; color: var(--ink); }
 .geo-help { font-size: 13px; line-height: 1.6; color: var(--ink); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
@@ -852,6 +863,34 @@ function geoHelpHTML() {
     3. חזרו לכאן ולחצו "אשרו את המיקום שלי".`;
   return `<b>איך מאשרים מיקום במחשב:</b> לחצו על סמל המנעול שליד הכתובת בראש הדפדפן ← <b>מיקום</b> ← <b>אפשר</b>, ואז לחצו "אשרו את המיקום שלי".`;
 }
+// ---- our own friendly "use your location?" dialog, shown BEFORE the browser asks.
+// Saying "not now" here never blocks location in the browser, so people can still allow it later with one tap.
+let geoChoice = sessionStorage.getItem("takin_geo") || "";   // "", "yes", "no"
+function askGeoDialog() {
+  return new Promise(res => {
+    const d = document.createElement("div"); d.className = "geo-modal"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true"); d.setAttribute("aria-labelledby", "geoQ");
+    d.innerHTML = `<div class="box"><div class="big">${ico("locate")}</div>
+      <h3 id="geoQ">להשתמש במיקום שלך?</h3>
+      <p>ככה נסמן את המפגע במפה ונכתוב את הכתובת לבד. המיקום משמש רק לדיווח הזה.</p>
+      <button class="btn btn-primary" type="button" data-a="yes">${ico("locate")}כן, השתמשו במיקום שלי</button>
+      <button class="btn btn-ghost" type="button" data-a="no">לא עכשיו, אסמן במפה בעצמי</button>
+      <p class="fine">${/iPhone|iPad|iPod/.test(navigator.userAgent) ? "אחרי \"כן\" הטלפון ישאל שוב – לחצו <b>אפשר</b> או <b>אפשר פעם אחת</b>." : "אחרי \"כן\" הדפדפן ישאל שוב – לחצו <b>אפשר</b>."}</p></div>`;
+    document.body.appendChild(d);
+    const done = a => { d.remove(); geoChoice = a; sessionStorage.setItem("takin_geo", a); res(a === "yes"); };
+    d.querySelectorAll("[data-a]").forEach(b => b.addEventListener("click", () => done(b.dataset.a)));
+    d.addEventListener("click", e => { if (e.target === d) done("no"); });
+    setTimeout(() => d.querySelector("[data-a=yes]").focus(), 50);
+  });
+}
+// decide whether to locate: already allowed → go; blocked → don't bother; otherwise ask with our dialog first
+async function maybeLocate(force) {
+  const st = await geoPermission();
+  if (st === "granted") return autoLocate(force);
+  if (st === "denied") { draft.gpsState = "denied"; locUI(); return; }
+  if (!force && geoChoice === "no") { locUI(); return; }
+  if (geoChoice !== "yes" || force) { if (!(await askGeoDialog())) { locUI(); return; } }
+  autoLocate(true);
+}
 // typed address → point on the map (searched inside the chosen city)
 async function forwardGeocode(q) {
   const [clat, clng] = cityCenter(), city = ($("#cityName") && $("#cityName").textContent) || "";
@@ -956,17 +995,22 @@ function locUI() {
     if (chips.length) suggest += `<div class="sug-label">או בחרו תיאור אחר:</div><div class="chips sug-chips">${chips.map(c => `<button class="chip" type="button" data-addr="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
   } else if (draft.lat) suggest = `<div class="sug-line muted">לא מצאנו שם רחוב לנקודה הזו. כתבו ציון דרך למטה.</div>`;
   const ask = !draft.lat && draft.gpsState !== "busy" && navigator.geolocation
-    ? `<div class="geo-ask"><p>${draft.gpsState === "denied" ? "כדי שנכתוב את הכתובת אוטומטית, צריך לאשר גישה למיקום." : "נשתמש במיקום שלכם כדי לסמן את המפגע ולכתוב את הכתובת אוטומטית."}</p>
-        <button class="btn btn-primary" type="button" id="askGeo">${ico("locate")}אשרו את המיקום שלי</button>
-        ${draft.gpsState === "denied" ? `<div class="geo-help">${geoHelpHTML()}</div>` : ""}</div>` : "";
+    ? (draft.gpsState === "denied"
+      ? `<div class="geo-note"><span>המיקום חסום בדפדפן – זה בסדר. <b>געו במפה</b> במקום המפגע, או <b>כתבו כתובת</b> למטה.</span>
+          <div class="row"><button class="btn btn-ghost" type="button" id="geoHow">איך מאפשרים מיקום?</button></div>
+          <div class="geo-help" id="geoHowBox" hidden>${geoHelpHTML()}</div></div>`
+      : `<div class="geo-note"><div class="row"><button class="btn btn-ghost" type="button" id="askGeo">${ico("locate")}השתמשו במיקום שלי</button></div></div>`)
+    : "";
   box.innerHTML = `${ask}<div class="loc-status ${draft.lat ? "ok" : ""}">${status}</div>
     ${weak ? `<div class="sug-warn">${ico("locate")}הדיוק נמוך. כדאי לגרור את הסיכה בדיוק למקום המפגע.</div>` : ""}
     ${suggest ? `<div class="sug">${suggest}</div>` : ""}`;
-  const ag = $("#askGeo"); ag && ag.addEventListener("click", () => autoLocate(true));
+  const ag = $("#askGeo"); ag && ag.addEventListener("click", () => maybeLocate(true));
+  const gh = $("#geoHow"); gh && gh.addEventListener("click", () => { const b = $("#geoHowBox"); b.hidden = !b.hidden; });
   box.querySelectorAll("[data-addr]").forEach(b => b.addEventListener("click", () => {
     draft.addr = b.dataset.addr; draft.addrManual = true; const i = $("#addrIn"); if (i) i.value = draft.addr; updNextLoc();
   }));
   const i = $("#addrIn"); if (i && !draft.addrManual && i.value !== draft.addr) i.value = draft.addr;
+  const gb = $("#gpsBtn"); if (gb) gb.hidden = !draft.lat || draft.gpsState === "denied";
   updNextLoc();
 }
 function updNextLoc() { const n = $("#nextBtn"), i = $("#addrIn"); if (n && i && step === 1) n.disabled = !(draft.lat || i.value.trim().length > 2); }
@@ -1177,7 +1221,7 @@ let draft = null, step = 0, picker = null, pickerBase = null, pickerPin = null;
 const STEP_NAMES = ["תמונה", "מיקום", "סוג", "פרטים"];
 const MAX_PHOTOS = 5, GOOD_PHOTOS = 3;
 function newDraft() { return { sub: "", photos: [], lat: null, lng: null, acc: null, src: "", addr: "", addrManual: false, geo: null, near: [], looking: false, gpsState: "", cat: null, desc: "" }; }
-function startFlow() { draft = newDraft(); step = 0; showSheet($("#flow")); renderStep(); autoLocate(); }
+function startFlow() { draft = newDraft(); step = 0; showSheet($("#flow")); renderStep(); geoPermission().then(st => { if (st === "granted" && draft) autoLocate(); }); }
 function stepper() {
   return `<div class="steps" aria-label="שלב ${step + 1} מתוך 4">${STEP_NAMES.map((n, i) =>
     `<div class="step ${i < step ? "done" : i === step ? "cur" : ""}"><i></i>${n}</div>`).join("")}</div>`;
@@ -1278,9 +1322,9 @@ function renderStep() {
     } else {
       $("#picker").hidden = true;
     }
-    $("#gpsBtn").addEventListener("click", () => autoLocate(true));
+    $("#gpsBtn").addEventListener("click", () => maybeLocate(true));
     // ask for location automatically only if it's already allowed; otherwise wait for the button (iPhone handles a tap-triggered request best)
-    if (!draft.lat && draft.gpsState !== "busy") geoPermission().then(st => { if (st === "granted" || (st === "unknown" && !/iPhone|iPad|iPod/.test(navigator.userAgent))) autoLocate(); else if (st === "denied") { draft.gpsState = "denied"; locUI(); } });
+    if (!draft.lat && draft.gpsState !== "busy") maybeLocate(false);
     locUI();
   }
 
@@ -1630,7 +1674,11 @@ $("#filters").addEventListener("click", e => {
 });
 let meMarker = null;
 $("#locateBtn").addEventListener("click", async () => {
-  const b = $("#locateBtn"); b.disabled = true;
+  const b = $("#locateBtn");
+  const st = await geoPermission();
+  if (st === "denied") return showGeoHelp();
+  if (st !== "granted" && geoChoice !== "yes" && !(await askGeoDialog())) return;
+  b.disabled = true;
   try {
     const p = await getPosition(true);
     if (map) {
@@ -1654,7 +1702,7 @@ initMap();
 render();
 initCloud();
 // ---- refresh / update: clears the offline copy and loads the newest version from the site
-const APP_VER = "10";
+const APP_VER = "11";
 $("#appVer").textContent = APP_VER;
 async function hardRefresh() {
   $("#refreshBtn").classList.add("spin");
